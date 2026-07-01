@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Test</title>
+<title>Test online</title>
+<style>
+body { font-family: Arial; margin: 20px; }
+button { padding: 10px 15px; margin: 10px 0; cursor: pointer; }
+.question { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; }
+</style>
 </head>
+
 <body>
 
 <h1>Test online</h1>
-<input type="file" id="fileInput">
-<button onclick="start()">Start testu</button>
+
+<button onclick="loadFromGit()">📥 Załaduj pytania z GitHuba</button>
+<button onclick="start()">🚀 Start testu</button>
 
 <div id="quiz"></div>
-<div id="result"></div>
+<div id="result" style="font-size:20px; margin-top:20px;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
@@ -19,52 +26,72 @@
 let questions = [];
 let selected = [];
 
-document.getElementById('fileInput').addEventListener('change', handleFile);
+/* 🔴 TU WKLEJ SWÓJ LINK DO RAW EXCELA */
+const FILE_URL = "https://raw.githubusercontent.com/TWOJ_LOGIN/TWOJE_REPO/main/pytania.xlsx";
 
-function handleFile(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+/* 1. POBRANIE EXCELA Z GITHUBA */
+async function loadFromGit() {
+    try {
+        const response = await fetch(FILE_URL);
+        const data = await response.arrayBuffer();
 
-    reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
+        const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        questions = XLSX.utils.sheet_to_json(sheet);
-        alert("Załadowano pytań: " + questions.length);
-    };
 
-    reader.readAsArrayBuffer(file);
+        questions = XLSX.utils.sheet_to_json(sheet);
+
+        alert("Załadowano pytań: " + questions.length);
+    } catch (err) {
+        alert("Błąd ładowania pliku!");
+        console.error(err);
+    }
 }
 
+/* 2. LOSOWANIE 60 PYTAŃ */
 function start() {
-    selected = questions.sort(() => Math.random() - 0.5).slice(0, 60);
+    if (questions.length === 0) {
+        alert("Najpierw załaduj pytania!");
+        return;
+    }
+
+    selected = questions
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 60);
 
     let html = "";
 
     selected.forEach((q, i) => {
         html += `
-        <p><b>${i+1}. ${q.pytanie}</b></p>
-        <label><input type="radio" name="q${i}" value="A"> ${q.A}</label><br>
-        <label><input type="radio" name="q${i}" value="B"> ${q.B}</label><br>
-        <label><input type="radio" name="q${i}" value="C"> ${q.C}</label><br>
-        <label><input type="radio" name="q${i}" value="D"> ${q.D}</label><br><br>
+        <div class="question">
+            <b>${i + 1}. ${q.pytanie}</b><br><br>
+
+            <label><input type="radio" name="q${i}" value="A"> ${q.A}</label><br>
+            <label><input type="radio" name="q${i}" value="B"> ${q.B}</label><br>
+            <label><input type="radio" name="q${i}" value="C"> ${q.C}</label><br>
+            <label><input type="radio" name="q${i}" value="D"> ${q.D}</label>
+        </div>
         `;
     });
 
-    html += `<button onclick="check()">Sprawdź</button>`;
+    html += `<button onclick="check()">✅ Sprawdź wynik</button>`;
+
     document.getElementById("quiz").innerHTML = html;
+    document.getElementById("result").innerHTML = "";
 }
 
+/* 3. SPRAWDZANIE WYNIKU */
 function check() {
     let score = 0;
 
     selected.forEach((q, i) => {
         const ans = document.querySelector(`input[name=q${i}]:checked`);
-        if (ans && ans.value == q.poprawna) score++;
+        if (ans && ans.value === q.poprawna) {
+            score++;
+        }
     });
 
     document.getElementById("result").innerHTML =
-        `Wynik: ${score} / ${selected.length} (${Math.round(score/selected.length*100)}%)`;
+        `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)`;
 }
 </script>
 
