@@ -7,30 +7,64 @@
 <body>
 
 <h1>Test online</h1>
-<button onclick="startTest()">Start testu</button>
+<input type="file" id="fileInput">
+<button onclick="start()">Start testu</button>
 
 <div id="quiz"></div>
+<div id="result"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
-const questions = [
-  "Pytanie 1",
-  "Pytanie 2",
-  "Pytanie 3",
-  "Pytanie 4",
-  "Pytanie 5",
-  "Pytanie 6"
-];
+let questions = [];
+let selected = [];
 
-// losowanie 3 pytań (zmienisz na 60)
-function getRandom(arr, n) {
-  return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+document.getElementById('fileInput').addEventListener('change', handleFile);
+
+function handleFile(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        questions = XLSX.utils.sheet_to_json(sheet);
+        alert("Załadowano pytań: " + questions.length);
+    };
+
+    reader.readAsArrayBuffer(file);
 }
 
-function startTest() {
-  const selected = getRandom(questions, 3);
+function start() {
+    selected = questions.sort(() => Math.random() - 0.5).slice(0, 60);
 
-  document.getElementById("quiz").innerHTML =
-    selected.map(q => `<p>${q}</p>`).join("");
+    let html = "";
+
+    selected.forEach((q, i) => {
+        html += `
+        <p><b>${i+1}. ${q.pytanie}</b></p>
+        <label><input type="radio" name="q${i}" value="A"> ${q.A}</label><br>
+        <label><input type="radio" name="q${i}" value="B"> ${q.B}</label><br>
+        <label><input type="radio" name="q${i}" value="C"> ${q.C}</label><br>
+        <label><input type="radio" name="q${i}" value="D"> ${q.D}</label><br><br>
+        `;
+    });
+
+    html += `<button onclick="check()">Sprawdź</button>`;
+    document.getElementById("quiz").innerHTML = html;
+}
+
+function check() {
+    let score = 0;
+
+    selected.forEach((q, i) => {
+        const ans = document.querySelector(`input[name=q${i}]:checked`);
+        if (ans && ans.value == q.poprawna) score++;
+    });
+
+    document.getElementById("result").innerHTML =
+        `Wynik: ${score} / ${selected.length} (${Math.round(score/selected.length*100)}%)`;
 }
 </script>
 
