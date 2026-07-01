@@ -47,30 +47,52 @@ async function loadFromGit() {
     }
 }
 
-/* 2. LOSOWANIE 60 PYTAŃ */
+/* 🔀 Losowanie odpowiedzi */
+function shuffleAnswers(q) {
+    return [
+        { key: "A", text: q.A },
+        { key: "B", text: q.B },
+        { key: "C", text: q.C },
+        { key: "D", text: q.D }
+    ].sort(() => Math.random() - 0.5);
+}
+
+/* 🚀 Start testu */
 function start() {
     if (questions.length === 0) {
         alert("Najpierw załaduj pytania!");
         return;
     }
 
+    /* 🔀 losowanie 60 + kolejność */
     selected = questions
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 60);
+        .map(q => ({ q, r: Math.random() }))
+        .sort((a, b) => a.r - b.r)
+        .map(x => x.q)
+        .slice(0, 60)
+        .sort(() => Math.random() - 0.5);
 
     let html = "";
 
     selected.forEach((q, i) => {
+
+        const answers = shuffleAnswers(q);
+
         html += `
         <div class="question">
             <b>${i + 1}. ${q.pytanie}</b><br><br>
-
-            <label><input type="radio" name="q${i}" value="A"> ${q.A}</label><br>
-            <label><input type="radio" name="q${i}" value="B"> ${q.B}</label><br>
-            <label><input type="radio" name="q${i}" value="C"> ${q.C}</label><br>
-            <label><input type="radio" name="q${i}" value="D"> ${q.D}</label>
-        </div>
         `;
+
+        answers.forEach(a => {
+            html += `
+            <label>
+                <input type="radio" name="q${i}" value="${a.key}">
+                ${a.text}
+            </label><br>
+            `;
+        });
+
+        html += `</div>`;
     });
 
     html += `<button onclick="check()">✅ Sprawdź wynik</button>`;
@@ -79,7 +101,7 @@ function start() {
     document.getElementById("result").innerHTML = "";
 }
 
-/* 3. SPRAWDZANIE WYNIKU */
+/* 🧮 Sprawdzanie wyniku */
 function check() {
     let score = 0;
 
@@ -93,7 +115,3 @@ function check() {
     document.getElementById("result").innerHTML =
         `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)`;
 }
-</script>
-
-</body>
-</html>
