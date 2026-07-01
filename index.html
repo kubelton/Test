@@ -14,15 +14,19 @@ button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
     margin-bottom: 15px;
     border-radius: 8px;
 }
-
-.good { color: green; font-weight: bold; }
-.bad { color: red; font-weight: bold; }
 </style>
 
 </head>
 <body>
 
 <h1>📘 Test online</h1>
+
+<!-- 📂 wybór kategorii -->
+<select id="categorySelect">
+    <option value="all">📚 Wszystkie kategorie</option>
+</select>
+
+<br><br>
 
 <button onclick="loadFromGit()">📥 Załaduj pytania</button>
 <button onclick="start()">🚀 Start testu</button>
@@ -33,6 +37,7 @@ button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
+
 let questions = [];
 let selected = [];
 
@@ -50,11 +55,28 @@ async function loadFromGit() {
 
         questions = XLSX.utils.sheet_to_json(sheet);
 
+        buildCategories();
+
         alert("Załadowano pytań: " + questions.length);
+
     } catch (err) {
         alert("Błąd ładowania pliku!");
         console.error(err);
     }
+}
+
+/* 📂 kategorie */
+function buildCategories() {
+    const categories = [...new Set(questions.map(q => q.kategoria))];
+
+    const select = document.getElementById("categorySelect");
+
+    categories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+    });
 }
 
 /* 🔀 odpowiedzi */
@@ -67,14 +89,30 @@ function shuffleAnswers(q) {
     ].sort(() => Math.random() - 0.5);
 }
 
-/* 🚀 START */
+/* 🚀 START TESTU */
 function start() {
+
     if (questions.length === 0) {
         alert("Najpierw załaduj pytania!");
         return;
     }
 
-    selected = questions
+    const selectedCategory = document.getElementById("categorySelect").value;
+
+    let pool = questions;
+
+    /* 🔥 filtr kategorii */
+    if (selectedCategory !== "all") {
+        pool = questions.filter(q => q.kategoria === selectedCategory);
+    }
+
+    if (pool.length === 0) {
+        alert("Brak pytań w tej kategorii!");
+        return;
+    }
+
+    /* 🔀 losowanie */
+    selected = pool
         .map(q => ({ q, r: Math.random() }))
         .sort((a, b) => a.r - b.r)
         .map(x => x.q)
@@ -112,19 +150,18 @@ function start() {
 
 /* 🧮 SPRAWDZANIE + POPRAWNE ODPOWIEDZI */
 function check() {
+
     let score = 0;
     let resultHTML = "";
 
     selected.forEach((q, i) => {
+
         const ans = document.querySelector(`input[name=q${i}]:checked`);
         const userKey = ans ? ans.value : null;
 
         const correctKey = q.poprawna;
 
-        /* znajdź tekst odpowiedzi użytkownika */
         const userText = userKey ? q[userKey] : "BRAK";
-
-        /* tekst poprawnej odpowiedzi */
         const correctText = q[correctKey];
 
         if (userKey === correctKey) score++;
@@ -150,9 +187,10 @@ function check() {
 
     document.getElementById("result").innerHTML =
         `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)<br><br>
-        <h2>📊 Analiza odpowiedzi:</h2>
+        <h2>📊 Analiza:</h2>
         ${resultHTML}`;
 }
+
 </script>
 
 </body>
