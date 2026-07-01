@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test</title>
+</head>
+<body>
+
+<h1>Test online</h1>
+<button onclick="startTest()">Start testu</button>
+
+<div id="quiz"></div>
+
+<script>
+const questions = [
+  "Pytanie 1",
+  "Pytanie 2",
+  "Pytanie 3",
+  "Pytanie 4",
+  "Pytanie 5",
+  "Pytanie 6"
+];
+
+// losowanie 3 pytań (zmienisz na 60)
+function getRandom(arr, n) {
+  return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+}
+
+function startTest() {
+  const selected = getRandom(questions, 3);
+
+  document.getElementById("quiz").innerHTML =
+    selected.map(q => `<p>${q}</p>`).join("");
+}
+</script>
+
+</body>
+</html>
