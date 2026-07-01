@@ -7,12 +7,16 @@
 <style>
 body { font-family: Arial; margin: 20px; }
 button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
+
 .question {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 8px;
 }
+
+.good { color: green; font-weight: bold; }
+.bad { color: red; font-weight: bold; }
 </style>
 
 </head>
@@ -32,10 +36,10 @@ button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
 let questions = [];
 let selected = [];
 
-/* 🔴 TU WSTAW SWÓJ LINK DO GITHUB RAW */
+/* 🔴 LINK DO GITHUB RAW */
 const FILE_URL = "https://raw.githubusercontent.com/kubelton/Test/main/test.xlsx";
 
-/* 📥 POBIERANIE EXCELA */
+/* 📥 LOAD EXCEL */
 async function loadFromGit() {
     try {
         const response = await fetch(FILE_URL);
@@ -53,7 +57,7 @@ async function loadFromGit() {
     }
 }
 
-/* 🔀 LOSOWANIE ODPOWIEDZI */
+/* 🔀 odpowiedzi */
 function shuffleAnswers(q) {
     return [
         { key: "A", text: q.A },
@@ -63,14 +67,13 @@ function shuffleAnswers(q) {
     ].sort(() => Math.random() - 0.5);
 }
 
-/* 🚀 START TESTU */
+/* 🚀 START */
 function start() {
     if (questions.length === 0) {
-        alert("Najpierw kliknij: Załaduj pytania");
+        alert("Najpierw załaduj pytania!");
         return;
     }
 
-    /* 🔀 losowanie 60 pytań + random kolejność */
     selected = questions
         .map(q => ({ q, r: Math.random() }))
         .sort((a, b) => a.r - b.r)
@@ -107,19 +110,40 @@ function start() {
     document.getElementById("result").innerHTML = "";
 }
 
-/* 🧮 SPRAWDZANIE */
+/* 🧮 SPRAWDZANIE + POPRAWNE ODPOWIEDZI */
 function check() {
     let score = 0;
+    let resultHTML = "";
 
     selected.forEach((q, i) => {
         const ans = document.querySelector(`input[name=q${i}]:checked`);
-        if (ans && ans.value === q.poprawna) {
-            score++;
-        }
+        const userAnswer = ans ? ans.value : null;
+
+        const correct = q.poprawna;
+
+        if (userAnswer === correct) score++;
+
+        resultHTML += `
+        <div class="question">
+
+            <b>${i + 1}. ${q.pytanie}</b><br><br>
+
+            Twoja odpowiedź:
+            <span class="${userAnswer === correct ? 'good' : 'bad'}">
+                ${userAnswer ? userAnswer : "BRAK"}
+            </span><br>
+
+            Poprawna odpowiedź:
+            <span class="good">${correct}</span>
+
+        </div>
+        `;
     });
 
     document.getElementById("result").innerHTML =
-        `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)`;
+        `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)<br><br>
+        <h2>📊 Szczegóły:</h2>
+        ${resultHTML}`;
 }
 </script>
 
