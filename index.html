@@ -3,18 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>Test online</title>
+
 <style>
 body { font-family: Arial; margin: 20px; }
-button { padding: 10px 15px; margin: 10px 0; cursor: pointer; }
-.question { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; }
+button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
+.question {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
 </style>
-</head>
 
+</head>
 <body>
 
-<h1>Test online</h1>
+<h1>📘 Test online</h1>
 
-<button onclick="loadFromGit()">📥 Załaduj pytania z GitHuba</button>
+<button onclick="loadFromGit()">📥 Załaduj pytania</button>
 <button onclick="start()">🚀 Start testu</button>
 
 <div id="quiz"></div>
@@ -26,10 +32,10 @@ button { padding: 10px 15px; margin: 10px 0; cursor: pointer; }
 let questions = [];
 let selected = [];
 
-/* 🔴 TU WKLEJ SWÓJ LINK DO RAW EXCELA */
-const FILE_URL = "https://github.com/kubelton/Test/blob/314d84f6b69552108fd56311763aa55a80387aae/test.xlsx";
+/* 🔴 TU WSTAW SWÓJ LINK DO GITHUB RAW */
+const FILE_URL = "https://github.com/kubelton/Test/blob/ee20cb7312c1d2f6f61152937922523b109e8d51/test.xlsx";
 
-/* 1. POBRANIE EXCELA Z GITHUBA */
+/* 📥 POBIERANIE EXCELA */
 async function loadFromGit() {
     try {
         const response = await fetch(FILE_URL);
@@ -47,7 +53,7 @@ async function loadFromGit() {
     }
 }
 
-/* 🔀 Losowanie odpowiedzi */
+/* 🔀 LOSOWANIE ODPOWIEDZI */
 function shuffleAnswers(q) {
     return [
         { key: "A", text: q.A },
@@ -57,14 +63,14 @@ function shuffleAnswers(q) {
     ].sort(() => Math.random() - 0.5);
 }
 
-/* 🚀 Start testu */
+/* 🚀 START TESTU */
 function start() {
     if (questions.length === 0) {
-        alert("Najpierw załaduj pytania!");
+        alert("Najpierw kliknij: Załaduj pytania");
         return;
     }
 
-    /* 🔀 losowanie 60 + kolejność */
+    /* 🔀 losowanie 60 pytań + random kolejność */
     selected = questions
         .map(q => ({ q, r: Math.random() }))
         .sort((a, b) => a.r - b.r)
@@ -101,7 +107,7 @@ function start() {
     document.getElementById("result").innerHTML = "";
 }
 
-/* 🧮 Sprawdzanie wyniku */
+/* 🧮 SPRAWDZANIE */
 function check() {
     let score = 0;
 
@@ -115,3 +121,7 @@ function check() {
     document.getElementById("result").innerHTML =
         `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)`;
 }
+</script>
+
+</body>
+</html>
