@@ -117,24 +117,32 @@ function check() {
 
     selected.forEach((q, i) => {
         const ans = document.querySelector(`input[name=q${i}]:checked`);
-        const userAnswer = ans ? ans.value : null;
+        const userKey = ans ? ans.value : null;
 
-        const correct = q.poprawna;
+        const correctKey = q.poprawna;
 
-        if (userAnswer === correct) score++;
+        /* znajdź tekst odpowiedzi użytkownika */
+        const userText = userKey ? q[userKey] : "BRAK";
+
+        /* tekst poprawnej odpowiedzi */
+        const correctText = q[correctKey];
+
+        if (userKey === correctKey) score++;
 
         resultHTML += `
         <div class="question">
 
             <b>${i + 1}. ${q.pytanie}</b><br><br>
 
-            Twoja odpowiedź:
-            <span class="${userAnswer === correct ? 'good' : 'bad'}">
-                ${userAnswer ? userAnswer : "BRAK"}
-            </span><br>
+            Twoja odpowiedź:<br>
+            <span style="color:${userKey === correctKey ? 'green' : 'red'}; font-weight:bold;">
+                ${userText}
+            </span><br><br>
 
-            Poprawna odpowiedź:
-            <span class="good">${correct}</span>
+            Poprawna odpowiedź:<br>
+            <span style="color:green; font-weight:bold;">
+                ${correctText}
+            </span>
 
         </div>
         `;
@@ -142,7 +150,7 @@ function check() {
 
     document.getElementById("result").innerHTML =
         `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)<br><br>
-        <h2>📊 Szczegóły:</h2>
+        <h2>📊 Analiza odpowiedzi:</h2>
         ${resultHTML}`;
 }
 </script>
