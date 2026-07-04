@@ -164,25 +164,48 @@ function check() {
         const userText = userKey ? q[userKey] : "BRAK";
         const correctText = q[correctKey];
 
-        if (userKey === correctKey) score++;
+       const percent = Math.round(score / selected.length * 100);
+        const passed = percent >= 75;
 
-        resultHTML += `
-        <div class="question">
+document.getElementById("result").innerHTML = `
+<div style="
+    border:3px solid ${passed ? '#28a745' : '#dc3545'};
+    background:${passed ? '#eafaf0' : '#fdeaea'};
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:30px;
+    text-align:center;
+">
 
-            <b>${i + 1}. ${q.pytanie}</b><br><br>
+    <h2 style="margin-top:0;">
+        🏁 Wynik: ${score} / ${selected.length} (${percent}%)
+    </h2>
 
-            Twoja odpowiedź:<br>
-            <span style="color:${userKey === correctKey ? 'green' : 'red'}; font-weight:bold;">
-                ${userText}
-            </span><br><br>
+    <h1 style="color:${passed ? '#28a745' : '#dc3545'}; margin:15px 0;">
+        ${passed ? "✅ EGZAMIN ZALICZONY!" : "❌ EGZAMIN NIEZALICZONY"}
+    </h1>
 
-            Poprawna odpowiedź:<br>
-            <span style="color:green; font-weight:bold;">
-                ${correctText}
-            </span>
+    <h3>
+        ${passed
+            ? "Uzyskałeś wymagane minimum 75% poprawnych odpowiedzi."
+            : "Do zaliczenia wymagane jest minimum 75% poprawnych odpowiedzi."}
+    </h3>
 
-        </div>
-        `;
+    ${
+        passed
+        ? `<img
+            src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnpwYzAzNDBxZ3JqYWZpeGdsNzUwdmF4bG05dDl5d2cwOTdsdWtvdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0HlSH2gsSrxJySnS/giphy.gif"
+            style="max-width:300px;border-radius:10px;margin-top:15px;"
+            alt="Gratulacje">`
+        : ""
+    }
+
+</div>
+
+<h2>📊 Analiza odpowiedzi</h2>
+
+${resultHTML}
+`;
     });
 
     document.getElementById("result").innerHTML =
