@@ -26,6 +26,52 @@ label {
 input[type="radio"] {
     margin-right: 8px;
 }
+
+/* 🖼️ STYLE DLA WYSKAKUJĄCEGO OKNA (MODAL) */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.6); 
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.close-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.close-btn:hover {
+    background-color: #0056b3;
+}
 </style>
 
 </head>
@@ -33,6 +79,7 @@ input[type="radio"] {
 
 <h1>📘 Test online</h1>
 
+<!-- 📂 wybór kategorii -->
 <select id="categorySelect">
     <option value="all">📚 Wszystkie kategorie</option>
 </select>
@@ -44,6 +91,17 @@ input[type="radio"] {
 
 <div id="quiz"></div>
 <div id="result" style="font-size:20px; margin-top:20px;"></div>
+
+<!-- 📦 WYSKAKUJĄCE OKNO (MODAL) -->
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Wynik</h2>
+        <h3 id="modalScore">0%</h3>
+        <img id="modalGif" src="" alt="Wynik testu">
+        <br>
+        <button class="close-btn" onclick="closeModal()">Zamknij</button>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
@@ -82,10 +140,8 @@ async function loadFromGit() {
 function buildCategories() {
     const select = document.getElementById("categorySelect");
     
-    // RESET listy (zostawiamy tylko opcję "Wszystkie kategorie")
     select.innerHTML = '<option value="all">📚 Wszystkie kategorie</option>';
 
-    // Pobranie unikalnych kategorii i usunięcie ewentualnych pustych wartości
     const categories = [...new Set(questions.map(q => q.kategoria).filter(Boolean))];
 
     categories.forEach(cat => {
@@ -98,7 +154,6 @@ function buildCategories() {
 
 /* 🔀 odpowiedzi */
 function shuffleAnswers(q) {
-    // Normalizacja kluczy (na wypadek małych/wielkich liter w Excelu)
     return [
         { key: "A", text: q.A || q.a || "" },
         { key: "B", text: q.B || q.b || "" },
@@ -114,13 +169,11 @@ function start() {
         return;
     }
 
-    // Resetowanie widoku wyniku z poprzedniego podejścia
     document.getElementById("result").innerHTML = "";
 
     const selectedCategory = document.getElementById("categorySelect").value;
     let pool = questions;
 
-    /* 🔥 filtr kategorii */
     if (selectedCategory !== "all") {
         pool = questions.filter(q => q.kategoria === selectedCategory);
     }
@@ -130,7 +183,6 @@ function start() {
         return;
     }
 
-    /* 🔀 losowanie max 60 pytań */
     selected = pool
         .map(q => ({ q, r: Math.random() }))
         .sort((a, b) => a.r - b.r)
@@ -173,11 +225,9 @@ function check() {
     selected.forEach((q, i) => {
         const ans = document.querySelector(`input[name=q${i}]:checked`);
         
-        // Zabezpieczenie przed wielkością liter w kolumnie "poprawna" (np. "a" vs "A")
         const correctKey = q.poprawna ? q.poprawna.toString().toUpperCase().trim() : "";
         const userKey = ans ? ans.value.toUpperCase() : null;
 
-        // Pobranie tekstu odpowiedzi z obiektu pytania
         const userText = userKey ? (q[userKey] || q[userKey.toLowerCase()] || "Brak tekstu") : "BRAK ODPOWIEDZI";
         const correctText = q[correctKey] || q[correctKey.toLowerCase()] || "Nieokreślona w pliku Excel";
 
@@ -201,15 +251,50 @@ function check() {
         `;
     });
 
+    const percentage = Math.round((score / selected.length) * 100);
+
     document.getElementById("result").innerHTML = `
         <hr>
-        🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round((score / selected.length) * 100)}%)<br><br>
+        🏁 Wynik: <b>${score} / ${selected.length}</b> (${percentage}%)<br><br>
         <h2>📊 Analiza:</h2>
         ${resultHTML}
     `;
+
+    // 🌟 OBSŁUGA OKNA MODALNEGO W ZALEŻNOŚCI OD PROGU 75%
+    const modal = document.getElementById("resultModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalScore = document.getElementById("modalScore");
+    const modalGif = document.getElementById("modalGif");
+
+    modalScore.textContent = `Twój wynik to: ${percentage}% (${score}/${selected.length})`;
+
+    if (percentage >= 75) {
+        modalTitle.innerHTML = "🎉 ZDAŁEŚ!";
+        modalTitle.style.color = "green";
+        modalGif.src = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2Q3ejJ3eGZwbzNnemZ2cGZpYTVoaGM0cTY1MWhsYzBsNnJhd2s1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/M0C1x0a4yP2uI/giphy.gif";
+    } else {
+        modalTitle.innerHTML = "⚠️ Masz problem...";
+        modalTitle.style.color = "red";
+        modalGif.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDNmcWVha3JzeG5mYTBkYWFrOXFpb2MxNmgwenlhdGNicWo4cHVueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/D12CsrRNv7gL6/giphy.gif";
+    }
+
+    // Wyświetl wyskakujące okno
+    modal.style.display = "flex";
     
-    // Przewiń stronę do wyniku po sprawdzeniu
     document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ❌ ZAMYKANIE OKNA */
+function closeModal() {
+    document.getElementById("resultModal").style.display = "none";
+}
+
+// Opcjonalnie: Zamknij okno po kliknięciu poza jego obszarem
+window.onclick = function(event) {
+    const modal = document.getElementById("resultModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
 }
 
 </script>
