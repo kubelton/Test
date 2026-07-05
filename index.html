@@ -61,4 +61,763 @@ body {
 
 .header-right button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.header-right .btn-motivation {
+    background: #4361ee;
+    color: white;
+}
+
+.header-right .btn-motivation:hover {
+    background: #3651d4;
+}
+
+.header-right .btn-music {
+    background: #e94560;
+    color: white;
+}
+
+.header-right .btn-music:hover {
+    background: #d63851;
+}
+
+/* Sekcja główna */
+.main-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Kontrolki */
+.controls {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.controls select {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    min-width: 250px;
+    transition: border-color 0.3s;
+    margin-bottom: 15px;
+}
+
+.controls select:focus {
+    outline: none;
+    border-color: #4361ee;
+}
+
+.controls .button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.controls .button-group button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.controls .button-group .btn-load {
+    background: #4361ee;
+    color: white;
+}
+
+.controls .button-group .btn-load:hover {
+    background: #3651d4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+.controls .button-group .btn-start {
+    background: #2ec4b6;
+    color: white;
+}
+
+.controls .button-group .btn-start:hover {
+    background: #26a89b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+}
+
+/* Pytania */
+.question {
+    background: white;
+    padding: 20px 25px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #4361ee;
+    transition: all 0.2s;
+}
+
+.question:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.question b {
+    font-size: 16px;
+    color: #1a1a2e;
+}
+
+.category-badge {
+    display: inline-block;
+    background: #e8edf9;
+    color: #4361ee;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.question label {
+    display: block;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.question label:hover {
+    background: #f8f9fa;
+}
+
+.question input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #4361ee;
+}
+
+/* Przycisk sprawdzenia */
+.btn-check {
+    background: #2ec4b6;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 30px auto;
+}
+
+.btn-check:hover {
+    background: #26a89b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(46, 196, 182, 0.4);
+}
+
+/* Wynik - analiza */
+#result .question {
+    border-left: 5px solid #ccc;
+}
+
+#result .question.correct {
+    border-left-color: #2ec4b6;
+}
+
+#result .question.incorrect {
+    border-left-color: #e94560;
+}
+
+.result-score {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.result-score .score-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: #4361ee;
+}
+
+/* Podsumowanie odpowiedzi */
+.answer-summary {
+    background: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.answer-summary h3 {
+    color: #1a1a2e;
+    margin-bottom: 15px;
+}
+
+.answer-summary .answer-item {
+    padding: 10px 15px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border-left: 4px solid #ccc;
+}
+
+.answer-summary .answer-item.correct-answer {
+    border-left-color: #2ec4b6;
+    background: #f0faf8;
+}
+
+.answer-summary .answer-item.wrong-answer {
+    border-left-color: #e94560;
+    background: #fdf0f2;
+}
+
+.answer-summary .answer-item .answer-text {
+    font-weight: 500;
+}
+
+.answer-summary .answer-item .answer-status {
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.answer-summary .answer-item .answer-status.correct {
+    color: #2ec4b6;
+}
+
+.answer-summary .answer-item .answer-status.wrong {
+    color: #e94560;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.modal-content img,
+.modal-content video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 15px 0;
+}
+
+.modal-content .close-btn {
+    background: #4361ee;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.modal-content .close-btn:hover {
+    background: #3651d4;
+}
+
+.modal-content .modal-title {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.modal-content .modal-title.pass {
+    color: #2ec4b6;
+}
+
+.modal-content .modal-title.fail {
+    color: #e94560;
+}
+
+.modal-content .modal-score {
+    font-size: 22px;
+    color: #1a1a2e;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
+    .header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .header-right button {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+    
+    .controls select {
+        min-width: 100%;
+    }
+    
+    .controls .button-group {
+        flex-direction: column;
+    }
+    
+    .controls .button-group button {
+        width: 100%;
+    }
+}
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <h1>📘 <span>Test</span> online</h1>
+    </div>
+    <div class="header-right">
+        <button class="btn-motivation" onclick="openMotivation()">💪 Motywacja</button>
+        <button class="btn-music" onclick="openMusic()">🎵 Dobra muzyka</button>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="controls">
+        <select id="categorySelect">
+            <option value="all">📚 Wszystkie kategorie</option>
+            <option value="exam">🎯 Wersja egzaminowa</option>
+        </select>
+        <div class="button-group">
+            <button class="btn-load" onclick="loadFromGit()">📥 Załaduj pytania</button>
+            <button class="btn-start" onclick="start()">🚀 Start testu</button>
+        </div>
+    </div>
+
+    <div id="quiz"></div>
+    <div id="result"></div>
+</div>
+
+<!-- MODAL WYNIKU -->
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <h2 class="modal-title" id="modalTitle">Wynik</h2>
+        <h3 class="modal-score" id="modalScore">0%</h3>
+        <img id="modalGif" src="" alt="Wynik testu">
+        <br>
+        <button class="close-btn" onclick="closeModal()">Zamknij</button>
+    </div>
+</div>
+
+<!-- MODAL MOTYWACJI -->
+<div id="motivationModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 15px;">💪 Motywacja</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+            <iframe 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                src="https://www.youtube.com/embed/xR-E2pwgFJo" 
+                frameborder="0" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <br>
+        <button class="close-btn" onclick="closeMotivation()">Zamknij</button>
+    </div>
+</div>
+
+<!-- MODAL MUZYKI -->
+<div id="musicModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 15px;">🎵 Dobra muzyka do testu</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+            <iframe 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                src="https://www.youtube.com/embed/8aZoEaCtFfU" 
+                frameborder="0" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <br>
+        <button class="close-btn" onclick="closeMusic()">Zamknij</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+
+let questions = [];
+let selected = [];
+
+/* 🔴 LINK DO GITHUB RAW */
+const FILE_URL = "https://raw.githubusercontent.com/kubelton/Test/main/test.xlsx";
+
+/* 📥 LOAD EXCEL */
+async function loadFromGit() {
+    try {
+        const response = await fetch(FILE_URL);
+        if (!response.ok) throw new Error("Problem z pobraniem pliku z GitHub");
+        
+        const data = await response.arrayBuffer();
+
+        const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        questions = XLSX.utils.sheet_to_json(sheet);
+
+        buildCategories();
+
+        alert("Załadowano pytań: " + questions.length);
+
+    } catch (err) {
+        alert("Błąd ładowania pliku! Sprawdź konsolę.");
+        console.error(err);
+    }
+}
+
+/* 📂 kategorie */
+function buildCategories() {
+    const select = document.getElementById("categorySelect");
+    
+    select.innerHTML = `
+        <option value="all">📚 Wszystkie kategorie</option>
+        <option value="exam">🎯 Wersja egzaminowa</option>
+    `;
+
+    const categories = [...new Set(questions.map(q => q.kategoria).filter(Boolean))];
+
+    categories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+    });
+}
+
+/* 🔀 odpowiedzi - pomijanie słowa "puste" */
+function shuffleAnswers(q) {
+    const rawAnswers = [
+        { key: "A", text: q.A || q.a },
+        { key: "B", text: q.B || q.b },
+        { key: "C", text: q.C || q.c },
+        { key: "D", text: q.D || q.d }
+    ];
+
+    const validAnswers = rawAnswers.filter(a => {
+        if (!a.text) return false;
+        
+        let text = a.text.toString().trim();
+        let lowerText = text.toLowerCase();
+        
+        if (text === "" || text === "-" || text === "–" || text === "—") return false;
+        if (lowerText.includes("puste")) return false;
+        if (lowerText === "brak" || lowerText === "brak odpowiedzi" || lowerText === "null" || lowerText === "undefined") return false;
+        
+        return true;
+    });
+
+    const finalAnswers = validAnswers.map(a => ({
+        key: a.key,
+        text: a.text.toString().trim()
+    }));
+
+    return finalAnswers.sort(() => Math.random() - 0.5);
+}
+
+/* 🎯 Funkcja do losowania proporcjonalnego pytań z kategorii */
+function selectProportionalQuestions(pool, maxPerCategory = 12) {
+    const categories = {};
+    pool.forEach(q => {
+        const cat = q.kategoria || "Inne";
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(q);
+    });
+
+    let selectedQuestions = [];
+    Object.keys(categories).forEach(cat => {
+        const catQuestions = categories[cat];
+        const shuffled = catQuestions.sort(() => Math.random() - 0.5);
+        const take = Math.min(maxPerCategory, shuffled.length);
+        const picked = shuffled.slice(0, take);
+        selectedQuestions = selectedQuestions.concat(picked);
+    });
+
+    return selectedQuestions.sort(() => Math.random() - 0.5);
+}
+
+/* 🚀 START TESTU */
+function start() {
+    if (questions.length === 0) {
+        alert("Najpierw załaduj pytania!");
+        return;
+    }
+
+    document.getElementById("result").innerHTML = "";
+
+    const selectedOption = document.getElementById("categorySelect").value;
+    let pool = questions;
+
+    if (selectedOption !== "all" && selectedOption !== "exam") {
+        pool = questions.filter(q => q.kategoria === selectedOption);
+    }
+
+    if (pool.length === 0) {
+        alert("Brak pytań w tej kategorii!");
+        return;
+    }
+
+    if (selectedOption === "exam") {
+        selected = selectProportionalQuestions(pool, 12);
+    } else {
+        selected = pool
+            .map(q => ({ q, r: Math.random() }))
+            .sort((a, b) => a.r - b.r)
+            .map(x => x.q)
+            .slice(0, 60)
+            .sort(() => Math.random() - 0.5);
+    }
+
+    if (selected.length === 0) {
+        alert("Brak pytań do wyświetlenia!");
+        return;
+    }
+
+    let html = `<div style="background:white;padding:15px 20px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;">
+        📊 Liczba pytań: <b>${selected.length}</b>
+    </div>`;
+
+    selected.forEach((q, i) => {
+        const answers = shuffleAnswers(q);
+
+        html += `
+        <div class="question">
+            <b>${i + 1}. ${q.pytanie}</b>
+            <span class="category-badge">${q.kategoria || "Inne"}</span>
+            <br><br>
+        `;
+
+        answers.forEach(a => {
+            html += `
+            <label>
+                <input type="radio" name="q${i}" value="${a.key}">
+                ${a.text}
+            </label>
+            `;
+        });
+
+        html += `</div>`;
+    });
+
+    html += `<button class="btn-check" onclick="check()">✅ Sprawdź wynik</button>`;
+
+    document.getElementById("quiz").innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* 🧮 SPRAWDZANIE */
+function check() {
+    let score = 0;
+    let resultHTML = "";
+    let summaryHTML = "";
+
+    selected.forEach((q, i) => {
+        const ans = document.querySelector(`input[name=q${i}]:checked`);
+        
+        const correctKey = q.poprawna ? q.poprawna.toString().toUpperCase().trim() : "";
+        const userKey = ans ? ans.value.toUpperCase() : null;
+
+        const userText = userKey ? (q[userKey] || q[userKey.toLowerCase()] || "Brak tekstu") : "BRAK ODPOWIEDZI";
+        const correctText = q[correctKey] || q[correctKey.toLowerCase()] || "Nieokreślona w pliku Excel";
+
+        const isCorrect = userKey === correctKey;
+        if (isCorrect) score++;
+
+        const statusClass = isCorrect ? 'correct' : 'incorrect';
+        const statusText = isCorrect ? '✅ Poprawnie' : '❌ Źle';
+
+        // Szczegółowa analiza dla każdego pytania
+        resultHTML += `
+        <div class="question ${statusClass}">
+            <b>${i + 1}. ${q.pytanie}</b>
+            <span class="category-badge">${q.kategoria || "Inne"}</span>
+            <br><br>
+
+            <div style="margin: 8px 0;">
+                <span style="font-weight:600;">Twój wybór:</span>
+                <span style="color:${isCorrect ? '#2ec4b6' : '#e94560'}; font-weight:bold;">
+                    ${userText}
+                </span>
+                <span style="margin-left:10px;font-weight:600;">${statusText}</span>
+            </div>
+
+            <div style="margin: 8px 0;">
+                <span style="font-weight:600;">Poprawna odpowiedź:</span>
+                <span style="color:#2ec4b6; font-weight:bold;">
+                    ${correctText}
+                </span>
+            </div>
+        </div>
+        `;
+
+        // Podsumowanie - lista wszystkich odpowiedzi
+        const allAnswers = shuffleAnswers(q);
+        let answersList = "";
+        allAnswers.forEach(a => {
+            const isUserAnswer = a.key === userKey;
+            const isCorrectAnswer = a.key === correctKey;
+            let status = "";
+            let style = "";
+            
+            if (isCorrectAnswer) {
+                status = "✅ DOBRA ODPOWIEDŹ";
+                style = "correct-answer";
+            } else if (isUserAnswer && !isCorrect) {
+                status = "❌ TWOJA ODPOWIEDŹ (BŁĘDNA)";
+                style = "wrong-answer";
+            } else if (isUserAnswer && isCorrect) {
+                status = "✅ TWOJA ODPOWIEDŹ (POPRAWNA)";
+                style = "correct-answer";
+            } else {
+                status = "❌ BŁĘDNA ODPOWIEDŹ";
+                style = "wrong-answer";
+            }
+
+            // Jeśli odpowiedź jest poprawna ale nie była wybrana
+            if (isCorrectAnswer && !isUserAnswer) {
+                status = "✅ POPRAWNA ODPOWIEDŹ (NIE WYBRANA)";
+                style = "correct-answer";
+            }
+            // Jeśli odpowiedź jest błędna i nie była wybrana
+            else if (!isCorrectAnswer && !isUserAnswer) {
+                status = "❌ BŁĘDNA ODPOWIEDŹ";
+                style = "wrong-answer";
+            }
+
+            answersList += `
+            <div class="answer-item ${style}">
+                <span class="answer-text">${a.key}. ${a.text}</span>
+                <span class="answer-status ${isCorrectAnswer ? 'correct' : 'wrong'}">${status}</span>
+            </div>
+            `;
+        });
+
+        summaryHTML += `
+        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+            <b style="color: #1a1a2e;">${i + 1}. ${q.pytanie}</b>
+            <span class="category-badge">${q.kategoria || "Inne"}</span>
+            ${answersList}
+        </div>
+        `;
+    });
+
+    const percentage = Math.round((score / selected.length) * 100);
+
+    document.getElementById("result").innerHTML = `
+        <div class="result-score">
+            <div style="font-size:18px;color:#1a1a2e;">🏁 Twój wynik</div>
+            <div class="score-number">${score} / ${selected.length}</div>
+            <div style="font-size:24px;font-weight:700;color:${percentage >= 75 ? '#2ec4b6' : '#e94560'};">
+                ${percentage}%
+            </div>
+        </div>
+        
+        <h2 style="margin:25px 0 15px 0;color:#1a1a2e;">📊 Analiza odpowiedzi:</h2>
+        ${resultHTML}
+        
+        <div class="answer-summary">
+            <h3>📋 Podsumowanie wszystkich odpowiedzi:</h3>
+            ${summaryHTML}
+        </div>
+    `;
+
+    // Modal z wynikiem
+    const modal = document.getElementById("resultModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalScore = document.getElementById("modalScore");
+    const modalGif = document.getElementById("modalGif");
+
+    modalScore.textContent = `${score}/${selected.length} (${percentage}%)`;
+
+    if (percentage >= 75) {
+        modalTitle.textContent = "🎉 ZDAŁEŚ!";
+        modalTitle.className = "modal-title pass";
+        modalGif.src = "https://media.tenor.com/b1ORh.gif";
+    } else {
+        modalTitle.textContent = "⚠️ Masz problem...";
+        modalTitle.className = "modal-title fail";
+        modalGif.src = "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmF3dHlmOGJ2YWpnZXB5MWUwZmhqdGRraWtkYzB0ZDN2MjAxY204YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1Dy0UgOf38ayGNPQo0/giphy.gif";
+    }
+
+    modal.style.display = "flex";
+    document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ❌ ZAMYKANIE MODALI */
+function closeModal() {
+    document.getElementById("resultModal").style.display = "none";
+}
+
+function openMotivation() {
+    document.getElementById("motivationModal").style.display = "flex";
+}
+
+function closeMotivation() {
+    document.getElementById("motivationModal").style.display = "none";
+}
+
+function openMusic() {
+    document.getElementById("musicModal").style.display = "flex";
+}
+
+function closeMusic() {
+    document.getElementById("musicModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
