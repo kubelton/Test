@@ -321,6 +321,11 @@ body {
     color: #1a1a2e;
 }
 
+/* Ukryty odtwarzacz audio */
+#bgMusic {
+    display: none;
+}
+
 /* Responsywność */
 @media (max-width: 768px) {
     .header {
@@ -383,6 +388,9 @@ body {
     <div id="quiz"></div>
     <div id="result"></div>
 </div>
+
+<!-- UKRYTY ODTWARZACZ AUDIO -->
+<iframe id="bgMusic" src="" allow="autoplay"></iframe>
 
 <!-- MODAL WYNIKU -->
 <div id="resultModal" class="modal">
@@ -533,6 +541,25 @@ function selectProportionalQuestions(pool, maxPerCategory = 12) {
     return selectedQuestions.sort(() => Math.random() - 0.5);
 }
 
+/* 🎵 Odtwarzanie muzyki w tle */
+function playBackgroundMusic() {
+    const player = document.getElementById('bgMusic');
+    // Używamy YouTube embed z autoplay
+    player.src = 'https://www.youtube.com/embed/T1G4wNahcFA?autoplay=1&loop=1&playlist=T1G4wNahcFA';
+    
+    // Dla lepszego wsparcia, próbujemy też audio element
+    try {
+        // Jeśli przeglądarka wspiera Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    } catch(e) {
+        // Ignorujemy błędy - niektóre przeglądarki mogą blokować autoplay
+        console.log('Audio context not supported');
+    }
+}
+
 /* 🚀 START TESTU */
 function start() {
     if (questions.length === 0) {
@@ -540,30 +567,10 @@ function start() {
         return;
     }
 
-    // Odtwórz muzykę do testu
+    // Odtwórz muzykę w tle (tylko raz)
     if (!examMusicStarted) {
         examMusicStarted = true;
-        const modal = document.createElement('div');
-        modal.id = 'examMusicModal';
-        modal.className = 'modal';
-        modal.style.display = 'flex';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h2 style="margin-bottom:15px;">🎵 Muzyka do testu</h2>
-                <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
-                    <iframe 
-                        style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                        src="https://www.youtube.com/embed/T1G4wNahcFA" 
-                        frameborder="0" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <br>
-                <button class="close-btn" onclick="closeExamMusic()">Zamknij i rozpocznij test</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        return;
+        playBackgroundMusic();
     }
 
     document.getElementById("result").innerHTML = "";
@@ -626,12 +633,6 @@ function start() {
 
     document.getElementById("quiz").innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function closeExamMusic() {
-    const modal = document.getElementById('examMusicModal');
-    if (modal) modal.remove();
-    start();
 }
 
 /* 🧮 SPRAWDZANIE */
@@ -703,12 +704,13 @@ function check() {
     if (percentage >= 75) {
         modalTitle.textContent = "🎉 ZDAŁEŚ!";
         modalTitle.className = "modal-title pass";
-        modalGif.src = "https://media.tenor.com/b1ORh.gif";
     } else {
         modalTitle.textContent = "⚠️ Masz problem...";
         modalTitle.className = "modal-title fail";
-        modalGif.src = "https://media.tenor.com/b1ORh.gif";
     }
+    
+    // GIF - ten sam dla obu przypadków (zgodnie z życzeniem)
+    modalGif.src = "https://media.tenor.com/b1ORh.gif";
 
     modal.style.display = "flex";
     document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
