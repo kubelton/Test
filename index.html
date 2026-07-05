@@ -321,11 +321,6 @@ body {
     color: #1a1a2e;
 }
 
-/* Ukryty odtwarzacz audio */
-#bgMusic {
-    display: none;
-}
-
 /* Responsywność */
 @media (max-width: 768px) {
     .header {
@@ -389,9 +384,6 @@ body {
     <div id="result"></div>
 </div>
 
-<!-- UKRYTY ODTWARZACZ AUDIO -->
-<iframe id="bgMusic" src="" allow="autoplay"></iframe>
-
 <!-- MODAL WYNIKU -->
 <div id="resultModal" class="modal">
     <div class="modal-content">
@@ -443,7 +435,6 @@ body {
 
 let questions = [];
 let selected = [];
-let examMusicStarted = false;
 
 /* 🔴 LINK DO GITHUB RAW */
 const FILE_URL = "https://raw.githubusercontent.com/kubelton/Test/main/test.xlsx";
@@ -541,36 +532,11 @@ function selectProportionalQuestions(pool, maxPerCategory = 12) {
     return selectedQuestions.sort(() => Math.random() - 0.5);
 }
 
-/* 🎵 Odtwarzanie muzyki w tle */
-function playBackgroundMusic() {
-    const player = document.getElementById('bgMusic');
-    // Używamy YouTube embed z autoplay
-    player.src = 'https://www.youtube.com/embed/T1G4wNahcFA?autoplay=1&loop=1&playlist=T1G4wNahcFA';
-    
-    // Dla lepszego wsparcia, próbujemy też audio element
-    try {
-        // Jeśli przeglądarka wspiera Web Audio API
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-    } catch(e) {
-        // Ignorujemy błędy - niektóre przeglądarki mogą blokować autoplay
-        console.log('Audio context not supported');
-    }
-}
-
 /* 🚀 START TESTU */
 function start() {
     if (questions.length === 0) {
         alert("Najpierw załaduj pytania!");
         return;
-    }
-
-    // Odtwórz muzykę w tle (tylko raz)
-    if (!examMusicStarted) {
-        examMusicStarted = true;
-        playBackgroundMusic();
     }
 
     document.getElementById("result").innerHTML = "";
@@ -704,13 +670,12 @@ function check() {
     if (percentage >= 75) {
         modalTitle.textContent = "🎉 ZDAŁEŚ!";
         modalTitle.className = "modal-title pass";
+        modalGif.src = "https://media.tenor.com/b1ORh.gif";
     } else {
         modalTitle.textContent = "⚠️ Masz problem...";
         modalTitle.className = "modal-title fail";
+        modalGif.src = "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmF3dHlmOGJ2YWpnZXB5MWUwZmhqdGRraWtkYzB0ZDN2MjAxY204YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1Dy0UgOf38ayGNPQo0/giphy.gif";
     }
-    
-    // GIF - ten sam dla obu przypadków (zgodnie z życzeniem)
-    modalGif.src = "https://media.tenor.com/b1ORh.gif";
 
     modal.style.display = "flex";
     document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
