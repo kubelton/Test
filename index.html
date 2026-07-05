@@ -5,14 +5,26 @@
 <title>Test online</title>
 
 <style>
-body { font-family: Arial; margin: 20px; }
-button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
+body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; font-size: 14px; }
+select { padding: 8px; font-size: 14px; }
 
 .question {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 15px;
     margin-bottom: 15px;
     border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+label {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    margin-right: 8px;
 }
 </style>
 
@@ -21,7 +33,6 @@ button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; }
 
 <h1>📘 Test online</h1>
 
-<!-- 📂 wybór kategorii -->
 <select id="categorySelect">
     <option value="all">📚 Wszystkie kategorie</option>
 </select>
@@ -48,6 +59,8 @@ const FILE_URL = "https://raw.githubusercontent.com/kubelton/Test/main/test.xlsx
 async function loadFromGit() {
     try {
         const response = await fetch(FILE_URL);
+        if (!response.ok) throw new Error("Problem z pobraniem pliku z GitHub");
+        
         const data = await response.arrayBuffer();
 
         const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
@@ -60,16 +73,20 @@ async function loadFromGit() {
         alert("Załadowano pytań: " + questions.length);
 
     } catch (err) {
-        alert("Błąd ładowania pliku!");
+        alert("Błąd ładowania pliku! Sprawdź konsolę.");
         console.error(err);
     }
 }
 
 /* 📂 kategorie */
 function buildCategories() {
-    const categories = [...new Set(questions.map(q => q.kategoria))];
-
     const select = document.getElementById("categorySelect");
+    
+    // RESET listy (zostawiamy tylko opcję "Wszystkie kategorie")
+    select.innerHTML = '<option value="all">📚 Wszystkie kategorie</option>';
+
+    // Pobranie unikalnych kategorii i usunięcie ewentualnych pustych wartości
+    const categories = [...new Set(questions.map(q => q.kategoria).filter(Boolean))];
 
     categories.forEach(cat => {
         const opt = document.createElement("option");
@@ -81,24 +98,26 @@ function buildCategories() {
 
 /* 🔀 odpowiedzi */
 function shuffleAnswers(q) {
+    // Normalizacja kluczy (na wypadek małych/wielkich liter w Excelu)
     return [
-        { key: "A", text: q.A },
-        { key: "B", text: q.B },
-        { key: "C", text: q.C },
-        { key: "D", text: q.D }
+        { key: "A", text: q.A || q.a || "" },
+        { key: "B", text: q.B || q.b || "" },
+        { key: "C", text: q.C || q.c || "" },
+        { key: "D", text: q.D || q.d || "" }
     ].sort(() => Math.random() - 0.5);
 }
 
 /* 🚀 START TESTU */
 function start() {
-
     if (questions.length === 0) {
         alert("Najpierw załaduj pytania!");
         return;
     }
 
-    const selectedCategory = document.getElementById("categorySelect").value;
+    // Resetowanie widoku wyniku z poprzedniego podejścia
+    document.getElementById("result").innerHTML = "";
 
+    const selectedCategory = document.getElementById("categorySelect").value;
     let pool = questions;
 
     /* 🔥 filtr kategorii */
@@ -111,7 +130,7 @@ function start() {
         return;
     }
 
-    /* 🔀 losowanie */
+    /* 🔀 losowanie max 60 pytań */
     selected = pool
         .map(q => ({ q, r: Math.random() }))
         .sort((a, b) => a.r - b.r)
@@ -122,7 +141,6 @@ function start() {
     let html = "";
 
     selected.forEach((q, i) => {
-
         const answers = shuffleAnswers(q);
 
         html += `
@@ -135,7 +153,7 @@ function start() {
             <label>
                 <input type="radio" name="q${i}" value="${a.key}">
                 ${a.text}
-            </label><br>
+            </label>
             `;
         });
 
@@ -145,73 +163,53 @@ function start() {
     html += `<button onclick="check()">✅ Sprawdź wynik</button>`;
 
     document.getElementById("quiz").innerHTML = html;
-    document.getElementById("result").innerHTML = "";
 }
 
 /* 🧮 SPRAWDZANIE + POPRAWNE ODPOWIEDZI */
 function check() {
-
     let score = 0;
     let resultHTML = "";
 
     selected.forEach((q, i) => {
-
         const ans = document.querySelector(`input[name=q${i}]:checked`);
-        const userKey = ans ? ans.value : null;
+        
+        // Zabezpieczenie przed wielkością liter w kolumnie "poprawna" (np. "a" vs "A")
+        const correctKey = q.poprawna ? q.poprawna.toString().toUpperCase().trim() : "";
+        const userKey = ans ? ans.value.toUpperCase() : null;
 
-        const correctKey = q.poprawna;
+        // Pobranie tekstu odpowiedzi z obiektu pytania
+        const userText = userKey ? (q[userKey] || q[userKey.toLowerCase()] || "Brak tekstu") : "BRAK ODPOWIEDZI";
+        const correctText = q[correctKey] || q[correctKey.toLowerCase()] || "Nieokreślona w pliku Excel";
 
-        const userText = userKey ? q[userKey] : "BRAK";
-        const correctText = q[correctKey];
+        const isCorrect = userKey === correctKey;
+        if (isCorrect) score++;
 
-       const percent = Math.round(score / selected.length * 100);
-        const passed = percent >= 75;
+        resultHTML += `
+        <div class="question" style="border-left: 5px solid ${isCorrect ? 'green' : 'red'};">
+            <b>${i + 1}. ${q.pytanie}</b><br><br>
 
-document.getElementById("result").innerHTML = `
-<div style="
-    border:3px solid ${passed ? '#28a745' : '#dc3545'};
-    background:${passed ? '#eafaf0' : '#fdeaea'};
-    border-radius:12px;
-    padding:20px;
-    margin-bottom:30px;
-    text-align:center;
-">
+            Twoja odpowiedź:<br>
+            <span style="color:${isCorrect ? 'green' : 'red'}; font-weight:bold;">
+                ${userText}
+            </span><br><br>
 
-    <h2 style="margin-top:0;">
-        🏁 Wynik: ${score} / ${selected.length} (${percent}%)
-    </h2>
-
-    <h1 style="color:${passed ? '#28a745' : '#dc3545'}; margin:15px 0;">
-        ${passed ? "✅ EGZAMIN ZALICZONY!" : "❌ EGZAMIN NIEZALICZONY"}
-    </h1>
-
-    <h3>
-        ${passed
-            ? "Uzyskałeś wymagane minimum 75% poprawnych odpowiedzi."
-            : "Do zaliczenia wymagane jest minimum 75% poprawnych odpowiedzi."}
-    </h3>
-
-    ${
-        passed
-        ? `<img
-            src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnpwYzAzNDBxZ3JqYWZpeGdsNzUwdmF4bG05dDl5d2cwOTdsdWtvdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0HlSH2gsSrxJySnS/giphy.gif"
-            style="max-width:300px;border-radius:10px;margin-top:15px;"
-            alt="Gratulacje">`
-        : ""
-    }
-
-</div>
-
-<h2>📊 Analiza odpowiedzi</h2>
-
-${resultHTML}
-`;
+            Poprawna odpowiedź:<br>
+            <span style="color:green; font-weight:bold;">
+                ${correctText}
+            </span>
+        </div>
+        `;
     });
 
-    document.getElementById("result").innerHTML =
-        `🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round(score / selected.length * 100)}%)<br><br>
+    document.getElementById("result").innerHTML = `
+        <hr>
+        🏁 Wynik: <b>${score} / ${selected.length}</b> (${Math.round((score / selected.length) * 100)}%)<br><br>
         <h2>📊 Analiza:</h2>
-        ${resultHTML}`;
+        ${resultHTML}
+    `;
+    
+    // Przewiń stronę do wyniku po sprawdzeniu
+    document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
 }
 
 </script>
