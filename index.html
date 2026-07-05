@@ -253,52 +253,61 @@ body {
     color: #4361ee;
 }
 
-/* Podsumowanie odpowiedzi */
-.answer-summary {
-    background: white;
-    padding: 20px 25px;
-    border-radius: 12px;
-    margin: 20px 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+/* Odpowiedzi w podsumowaniu */
+.answer-option {
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.answer-summary h3 {
-    color: #1a1a2e;
-    margin-bottom: 15px;
-}
-
-.answer-summary .answer-item {
-    padding: 10px 15px;
-    margin: 6px 0;
-    border-radius: 8px;
-    border-left: 4px solid #ccc;
-}
-
-.answer-summary .answer-item.correct-answer {
-    border-left-color: #2ec4b6;
-    background: #f0faf8;
-}
-
-.answer-summary .answer-item.wrong-answer {
-    border-left-color: #e94560;
-    background: #fdf0f2;
-}
-
-.answer-summary .answer-item .answer-text {
-    font-weight: 500;
-}
-
-.answer-summary .answer-item .answer-status {
+.answer-option .status-badge {
     font-weight: 600;
-    margin-left: 10px;
+    font-size: 13px;
+    padding: 2px 10px;
+    border-radius: 12px;
 }
 
-.answer-summary .answer-item .answer-status.correct {
+.answer-option.correct {
+    background: #e8f5e9;
+    border-left: 3px solid #2ec4b6;
+}
+
+.answer-option.correct .status-badge {
     color: #2ec4b6;
 }
 
-.answer-summary .answer-item .answer-status.wrong {
+.answer-option.wrong {
+    background: #fce4ec;
+    border-left: 3px solid #e94560;
+}
+
+.answer-option.wrong .status-badge {
     color: #e94560;
+}
+
+.answer-option.user-answer-correct {
+    background: #c8e6c9;
+    border-left: 3px solid #2ec4b6;
+}
+
+.answer-option.user-answer-correct .status-badge {
+    color: #2ec4b6;
+}
+
+.answer-option.user-answer-wrong {
+    background: #ffcdd2;
+    border-left: 3px solid #e94560;
+}
+
+.answer-option.user-answer-wrong .status-badge {
+    color: #e94560;
+}
+
+.answer-option .answer-text {
+    flex: 1;
 }
 
 /* Modal */
@@ -653,7 +662,6 @@ function start() {
 function check() {
     let score = 0;
     let resultHTML = "";
-    let summaryHTML = "";
 
     selected.forEach((q, i) => {
         const ans = document.querySelector(`input[name=q${i}]:checked`);
@@ -670,7 +678,59 @@ function check() {
         const statusClass = isCorrect ? 'correct' : 'incorrect';
         const statusText = isCorrect ? '✅ Poprawnie' : '❌ Źle';
 
-        // Szczegółowa analiza dla każdego pytania
+        // Pobierz wszystkie odpowiedzi dla tego pytania (bez mieszania)
+        const allRawAnswers = [
+            { key: "A", text: q.A || q.a },
+            { key: "B", text: q.B || q.b },
+            { key: "C", text: q.C || q.c },
+            { key: "D", text: q.D || q.d }
+        ];
+
+        const allValidAnswers = allRawAnswers.filter(a => {
+            if (!a.text) return false;
+            let text = a.text.toString().trim();
+            let lowerText = text.toLowerCase();
+            if (text === "" || text === "-" || text === "–" || text === "—") return false;
+            if (lowerText.includes("puste")) return false;
+            if (lowerText === "brak" || lowerText === "brak odpowiedzi" || lowerText === "null" || lowerText === "undefined") return false;
+            return true;
+        });
+
+        // Generuj listę wszystkich odpowiedzi
+        let allAnswersHTML = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
+        allAnswersHTML += '<div style="font-size:14px;font-weight:600;color:#666;margin-bottom:6px;">📋 Wszystkie dostępne odpowiedzi:</div>';
+
+        allValidAnswers.forEach(a => {
+            const isUser = a.key === userKey;
+            const isCorrectAns = a.key === correctKey;
+            
+            let cssClass = '';
+            let statusText2 = '';
+
+            if (isCorrectAns && isUser) {
+                cssClass = 'user-answer-correct';
+                statusText2 = '✅ TWOJA ODPOWIEDŹ (POPRAWNA)';
+            } else if (isCorrectAns && !isUser) {
+                cssClass = 'correct';
+                statusText2 = '✅ POPRAWNA ODPOWIEDŹ';
+            } else if (isUser && !isCorrectAns) {
+                cssClass = 'user-answer-wrong';
+                statusText2 = '❌ TWOJA ODPOWIEDŹ (BŁĘDNA)';
+            } else {
+                cssClass = 'wrong';
+                statusText2 = '❌ BŁĘDNA ODPOWIEDŹ';
+            }
+
+            allAnswersHTML += `
+                <div class="answer-option ${cssClass}">
+                    <span class="answer-text"><b>${a.key}.</b> ${a.text}</span>
+                    <span class="status-badge">${statusText2}</span>
+                </div>
+            `;
+        });
+
+        allAnswersHTML += '</div>';
+
         resultHTML += `
         <div class="question ${statusClass}">
             <b>${i + 1}. ${q.pytanie}</b>
@@ -691,56 +751,8 @@ function check() {
                     ${correctText}
                 </span>
             </div>
-        </div>
-        `;
 
-        // Podsumowanie - lista wszystkich odpowiedzi
-        const allAnswers = shuffleAnswers(q);
-        let answersList = "";
-        allAnswers.forEach(a => {
-            const isUserAnswer = a.key === userKey;
-            const isCorrectAnswer = a.key === correctKey;
-            let status = "";
-            let style = "";
-            
-            if (isCorrectAnswer) {
-                status = "✅ DOBRA ODPOWIEDŹ";
-                style = "correct-answer";
-            } else if (isUserAnswer && !isCorrect) {
-                status = "❌ TWOJA ODPOWIEDŹ (BŁĘDNA)";
-                style = "wrong-answer";
-            } else if (isUserAnswer && isCorrect) {
-                status = "✅ TWOJA ODPOWIEDŹ (POPRAWNA)";
-                style = "correct-answer";
-            } else {
-                status = "❌ BŁĘDNA ODPOWIEDŹ";
-                style = "wrong-answer";
-            }
-
-            // Jeśli odpowiedź jest poprawna ale nie była wybrana
-            if (isCorrectAnswer && !isUserAnswer) {
-                status = "✅ POPRAWNA ODPOWIEDŹ (NIE WYBRANA)";
-                style = "correct-answer";
-            }
-            // Jeśli odpowiedź jest błędna i nie była wybrana
-            else if (!isCorrectAnswer && !isUserAnswer) {
-                status = "❌ BŁĘDNA ODPOWIEDŹ";
-                style = "wrong-answer";
-            }
-
-            answersList += `
-            <div class="answer-item ${style}">
-                <span class="answer-text">${a.key}. ${a.text}</span>
-                <span class="answer-status ${isCorrectAnswer ? 'correct' : 'wrong'}">${status}</span>
-            </div>
-            `;
-        });
-
-        summaryHTML += `
-        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-            <b style="color: #1a1a2e;">${i + 1}. ${q.pytanie}</b>
-            <span class="category-badge">${q.kategoria || "Inne"}</span>
-            ${answersList}
+            ${allAnswersHTML}
         </div>
         `;
     });
@@ -758,11 +770,6 @@ function check() {
         
         <h2 style="margin:25px 0 15px 0;color:#1a1a2e;">📊 Analiza odpowiedzi:</h2>
         ${resultHTML}
-        
-        <div class="answer-summary">
-            <h3>📋 Podsumowanie wszystkich odpowiedzi:</h3>
-            ${summaryHTML}
-        </div>
     `;
 
     // Modal z wynikiem
