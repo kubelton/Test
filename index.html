@@ -72,6 +72,16 @@ input[type="radio"] {
 .close-btn:hover {
     background-color: #0056b3;
 }
+
+.category-badge {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 10px;
+}
 </style>
 
 </head>
@@ -81,6 +91,7 @@ input[type="radio"] {
 
 <select id="categorySelect">
     <option value="all">📚 Wszystkie kategorie</option>
+    <option value="exam">🎯 Wersja egzaminowa</option>
 </select>
 
 <br><br>
@@ -138,7 +149,10 @@ async function loadFromGit() {
 function buildCategories() {
     const select = document.getElementById("categorySelect");
     
-    select.innerHTML = '<option value="all">📚 Wszystkie kategorie</option>';
+    select.innerHTML = `
+        <option value="all">📚 Wszystkie kategorie</option>
+        <option value="exam">🎯 Wersja egzaminowa</option>
+    `;
 
     const categories = [...new Set(questions.map(q => q.kategoria).filter(Boolean))];
 
@@ -161,33 +175,55 @@ function shuffleAnswers(q) {
 
     // 🔥 Filtrowanie - pomijamy wszystko co zawiera słowo "puste"
     const validAnswers = rawAnswers.filter(a => {
-        // Sprawdź czy odpowiedź istnieje
         if (!a.text) return false;
         
-        // Zamień na tekst i usuń spacje
         let text = a.text.toString().trim();
         let lowerText = text.toLowerCase();
         
-        // Jeśli tekst jest pusty lub to myślnik -> pomiń
         if (text === "" || text === "-" || text === "–" || text === "—") return false;
-        
-        // Jeśli tekst zawiera słowo "puste" -> pomiń (działa dla: puste, Puste, PUSTE, itp.)
         if (lowerText.includes("puste")) return false;
-        
-        // Pomijamy też inne warianty
         if (lowerText === "brak" || lowerText === "brak odpowiedzi" || lowerText === "null" || lowerText === "undefined") return false;
         
         return true;
     });
 
-    // Mapujemy do finalnej tablicy
     const finalAnswers = validAnswers.map(a => ({
         key: a.key,
         text: a.text.toString().trim()
     }));
 
-    // Losujemy kolejność
     return finalAnswers.sort(() => Math.random() - 0.5);
+}
+
+/* 🎯 Funkcja do losowania proporcjonalnego pytań z kategorii */
+function selectProportionalQuestions(pool, maxPerCategory = 12) {
+    // Grupuj pytania według kategorii
+    const categories = {};
+    pool.forEach(q => {
+        const cat = q.kategoria || "Inne";
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(q);
+    });
+
+    console.log("📊 Kategorie:", Object.keys(categories));
+    console.log("📊 Liczba pytań w kategoriach:", Object.fromEntries(
+        Object.entries(categories).map(([k, v]) => [k, v.length])
+    ));
+
+    // Losuj pytania z każdej kategorii (max 12)
+    let selectedQuestions = [];
+    Object.keys(categories).forEach(cat => {
+        const catQuestions = categories[cat];
+        // Losuj maksymalnie 12 pytań z danej kategorii
+        const shuffled = catQuestions.sort(() => Math.random() - 0.5);
+        const take = Math.min(maxPerCategory, shuffled.length);
+        const picked = shuffled.slice(0, take);
+        selectedQuestions = selectedQuestions.concat(picked);
+        console.log(`📌 ${cat}: wylosowano ${take} z ${shuffled.length} pytań`);
+    });
+
+    // Mieszamy wszystkie pytania
+    return selectedQuestions.sort(() => Math.random() - 0.5);
 }
 
 /* 🚀 START TESTU */
@@ -199,11 +235,12 @@ function start() {
 
     document.getElementById("result").innerHTML = "";
 
-    const selectedCategory = document.getElementById("categorySelect").value;
+    const selectedOption = document.getElementById("categorySelect").value;
     let pool = questions;
 
-    if (selectedCategory !== "all") {
-        pool = questions.filter(q => q.kategoria === selectedCategory);
+    // Jeśli wybrano konkretną kategorię (nie "all" i nie "exam")
+    if (selectedOption !== "all" && selectedOption !== "exam") {
+        pool = questions.filter(q => q.kategoria === selectedOption);
     }
 
     if (pool.length === 0) {
@@ -211,21 +248,37 @@ function start() {
         return;
     }
 
-    selected = pool
-        .map(q => ({ q, r: Math.random() }))
-        .sort((a, b) => a.r - b.r)
-        .map(x => x.q)
-        .slice(0, 60)
-        .sort(() => Math.random() - 0.5);
+    // 🎯 WERSJA EGZAMINOWA - proporcjonalne losowanie
+    if (selectedOption === "exam") {
+        selected = selectProportionalQuestions(pool, 12);
+    } else {
+        // Normalne losowanie (wszystkie kategorie lub wybrana)
+        selected = pool
+            .map(q => ({ q, r: Math.random() }))
+            .sort((a, b) => a.r - b.r)
+            .map(x => x.q)
+            .slice(0, 60)
+            .sort(() => Math.random() - 0.5);
+    }
 
-    let html = "";
+    // Jeśli wersja egzaminowa i brak pytań
+    if (selected.length === 0) {
+        alert("Brak pytań do wyświetlenia!");
+        return;
+    }
+
+    let html = `<div style="margin-bottom: 15px; padding: 10px; background: #e8f4fd; border-radius: 8px;">
+        📊 Liczba pytań: <b>${selected.length}</b>
+    </div>`;
 
     selected.forEach((q, i) => {
         const answers = shuffleAnswers(q);
 
         html += `
         <div class="question">
-            <b>${i + 1}. ${q.pytanie}</b><br><br>
+            <b>${i + 1}. ${q.pytanie}</b>
+            <span class="category-badge">${q.kategoria || "Inne"}</span>
+            <br><br>
         `;
 
         answers.forEach(a => {
@@ -264,7 +317,9 @@ function check() {
 
         resultHTML += `
         <div class="question" style="border-left: 5px solid ${isCorrect ? 'green' : 'red'};">
-            <b>${i + 1}. ${q.pytanie}</b><br><br>
+            <b>${i + 1}. ${q.pytanie}</b>
+            <span class="category-badge">${q.kategoria || "Inne"}</span>
+            <br><br>
 
             Twoja odpowiedź:<br>
             <span style="color:${isCorrect ? 'green' : 'red'}; font-weight:bold;">
