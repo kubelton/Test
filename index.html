@@ -150,7 +150,6 @@ function buildCategories() {
     });
 }
 
-/* 🔀 odpowiedzi i ignorowanie słowa "puste" */
 function shuffleAnswers(q) {
     const rawAnswers = [
         { key: "A", text: q.A || q.a },
@@ -159,14 +158,21 @@ function shuffleAnswers(q) {
         { key: "D", text: q.D || q.d }
     ];
 
-    // 🔥 Filtrowanie na podstawie słowa kluczowego "puste"
+    // 🔥 Filtrowanie - pomijamy wszystkie warianty "puste"
     const validAnswers = rawAnswers.filter(a => {
         if (a.text === undefined || a.text === null) return false;
         
         let cleanedText = a.text.toString().trim().toLowerCase();
         
-        // Jeśli tekst jest pusty, jest myślnikiem lub zawiera słowo "puste" -> odrzucamy
-        if (cleanedText === "" || cleanedText === "-" || cleanedText === "puste") return false;
+        // Sprawdzamy różne warianty "puste"
+        const emptyVariants = ["", "-", "puste", "(puste)", "[puste]", "pusty", "null", "undefined", "brak", "brak odpowiedzi"];
+        
+        // Jeśli tekst jest pusty lub zawiera któreś z tych słów -> odrzucamy
+        if (cleanedText === "" || cleanedText === "-") return false;
+        if (emptyVariants.some(variant => cleanedText === variant)) return false;
+        
+        // Dodatkowo: jeśli tekst zawiera słowo "puste" jako część większego tekstu
+        if (cleanedText.includes("puste") && cleanedText.length < 20) return false;
         
         return true;
     });
