@@ -5,110 +5,427 @@
 <title>Test online</title>
 
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-button { padding: 10px 15px; margin: 10px 5px; cursor: pointer; font-size: 14px; }
-select { padding: 8px; font-size: 14px; }
+/* Reset i podstawy */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-.question {
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Header z przyciskami */
+.header {
+    background: white;
+    padding: 20px 40px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #1a1a2e;
+    font-weight: 700;
+}
+
+.header-left h1 span {
+    color: #4361ee;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.header-right button {
+    padding: 10px 20px;
+    border: none;
     border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-label {
-    display: block;
-    margin: 5px 0;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f0f2f5;
+    color: #1a1a2e;
 }
 
-input[type="radio"] {
-    margin-right: 8px;
+.header-right button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* 🖼️ STYLE DLA WYSKAKUJĄCEGO OKNA (MODAL) */
+.header-right .btn-motivation {
+    background: #4361ee;
+    color: white;
+}
+
+.header-right .btn-motivation:hover {
+    background: #3651d4;
+}
+
+.header-right .btn-music {
+    background: #e94560;
+    color: white;
+}
+
+.header-right .btn-music:hover {
+    background: #d63851;
+}
+
+/* Sekcja główna */
+.main-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Kontrolki */
+.controls {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.controls select {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    min-width: 250px;
+    transition: border-color 0.3s;
+    margin-bottom: 15px;
+}
+
+.controls select:focus {
+    outline: none;
+    border-color: #4361ee;
+}
+
+.controls .button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.controls .button-group button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.controls .button-group .btn-load {
+    background: #4361ee;
+    color: white;
+}
+
+.controls .button-group .btn-load:hover {
+    background: #3651d4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+.controls .button-group .btn-start {
+    background: #2ec4b6;
+    color: white;
+}
+
+.controls .button-group .btn-start:hover {
+    background: #26a89b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+}
+
+/* Pytania */
+.question {
+    background: white;
+    padding: 20px 25px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #4361ee;
+    transition: all 0.2s;
+}
+
+.question:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.question b {
+    font-size: 16px;
+    color: #1a1a2e;
+}
+
+.category-badge {
+    display: inline-block;
+    background: #e8edf9;
+    color: #4361ee;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.question label {
+    display: block;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.question label:hover {
+    background: #f8f9fa;
+}
+
+.question input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #4361ee;
+}
+
+/* Przycisk sprawdzenia */
+.btn-check {
+    background: #2ec4b6;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 30px auto;
+}
+
+.btn-check:hover {
+    background: #26a89b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(46, 196, 182, 0.4);
+}
+
+/* Wynik - analiza */
+#result .question {
+    border-left: 5px solid #ccc;
+}
+
+#result .question.correct {
+    border-left-color: #2ec4b6;
+}
+
+#result .question.incorrect {
+    border-left-color: #e94560;
+}
+
+.result-score {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.result-score .score-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: #4361ee;
+}
+
+/* Modal */
 .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1000; 
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.6); 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
     text-align: center;
-    max-width: 450px;
+    max-width: 500px;
     width: 90%;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    position: relative;
 }
 
-.modal-content img {
+.modal-content img,
+.modal-content video {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 12px;
     margin: 15px 0;
 }
 
-.close-btn {
-    background-color: #007bff;
+.modal-content .close-btn {
+    background: #4361ee;
     color: white;
     border: none;
-    padding: 10px 25px;
+    padding: 10px 30px;
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    transition: background 0.3s;
+    margin-top: 10px;
 }
 
-.close-btn:hover {
-    background-color: #0056b3;
+.modal-content .close-btn:hover {
+    background: #3651d4;
 }
 
-.category-badge {
-    display: inline-block;
-    background: #007bff;
-    color: white;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-left: 10px;
+.modal-content .modal-title {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.modal-content .modal-title.pass {
+    color: #2ec4b6;
+}
+
+.modal-content .modal-title.fail {
+    color: #e94560;
+}
+
+.modal-content .modal-score {
+    font-size: 22px;
+    color: #1a1a2e;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
+    .header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .header-right button {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+    
+    .controls select {
+        min-width: 100%;
+    }
+    
+    .controls .button-group {
+        flex-direction: column;
+    }
+    
+    .controls .button-group button {
+        width: 100%;
+    }
 }
 </style>
 
 </head>
 <body>
 
-<h1>📘 Test online</h1>
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <h1>📘 <span>Test</span> online</h1>
+    </div>
+    <div class="header-right">
+        <button class="btn-motivation" onclick="openMotivation()">💪 Motywacja</button>
+        <button class="btn-music" onclick="openMusic()">🎵 Dobra muzyka</button>
+    </div>
+</div>
 
-<select id="categorySelect">
-    <option value="all">📚 Wszystkie kategorie</option>
-    <option value="exam">🎯 Wersja egzaminowa</option>
-</select>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="controls">
+        <select id="categorySelect">
+            <option value="all">📚 Wszystkie kategorie</option>
+            <option value="exam">🎯 Wersja egzaminowa</option>
+        </select>
+        <div class="button-group">
+            <button class="btn-load" onclick="loadFromGit()">📥 Załaduj pytania</button>
+            <button class="btn-start" onclick="start()">🚀 Start testu</button>
+        </div>
+    </div>
 
-<br><br>
+    <div id="quiz"></div>
+    <div id="result"></div>
+</div>
 
-<button onclick="loadFromGit()">📥 Załaduj pytania</button>
-<button onclick="start()">🚀 Start testu</button>
-
-<div id="quiz"></div>
-<div id="result" style="font-size:20px; margin-top:20px;"></div>
-
+<!-- MODAL WYNIKU -->
 <div id="resultModal" class="modal">
     <div class="modal-content">
-        <h2 id="modalTitle">Wynik</h2>
-        <h3 id="modalScore">0%</h3>
+        <h2 class="modal-title" id="modalTitle">Wynik</h2>
+        <h3 class="modal-score" id="modalScore">0%</h3>
         <img id="modalGif" src="" alt="Wynik testu">
         <br>
         <button class="close-btn" onclick="closeModal()">Zamknij</button>
+    </div>
+</div>
+
+<!-- MODAL MOTYWACJI -->
+<div id="motivationModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 15px;">💪 Motywacja</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+            <iframe 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                src="https://www.youtube.com/embed/xR-E2pwgFJo" 
+                frameborder="0" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <br>
+        <button class="close-btn" onclick="closeMotivation()">Zamknij</button>
+    </div>
+</div>
+
+<!-- MODAL MUZYKI -->
+<div id="musicModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 15px;">🎵 Dobra muzyka do testu</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+            <iframe 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                src="https://www.youtube.com/embed/8aZoEaCtFfU" 
+                frameborder="0" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <br>
+        <button class="close-btn" onclick="closeMusic()">Zamknij</button>
     </div>
 </div>
 
@@ -118,6 +435,7 @@ input[type="radio"] {
 
 let questions = [];
 let selected = [];
+let examMusicStarted = false;
 
 /* 🔴 LINK DO GITHUB RAW */
 const FILE_URL = "https://raw.githubusercontent.com/kubelton/Test/main/test.xlsx";
@@ -164,7 +482,7 @@ function buildCategories() {
     });
 }
 
-/* 🔀 odpowiedzi - pomijanie słowa "puste" (niezależnie od wielkości liter) */
+/* 🔀 odpowiedzi - pomijanie słowa "puste" */
 function shuffleAnswers(q) {
     const rawAnswers = [
         { key: "A", text: q.A || q.a },
@@ -173,7 +491,6 @@ function shuffleAnswers(q) {
         { key: "D", text: q.D || q.d }
     ];
 
-    // 🔥 Filtrowanie - pomijamy wszystko co zawiera słowo "puste"
     const validAnswers = rawAnswers.filter(a => {
         if (!a.text) return false;
         
@@ -197,7 +514,6 @@ function shuffleAnswers(q) {
 
 /* 🎯 Funkcja do losowania proporcjonalnego pytań z kategorii */
 function selectProportionalQuestions(pool, maxPerCategory = 12) {
-    // Grupuj pytania według kategorii
     const categories = {};
     pool.forEach(q => {
         const cat = q.kategoria || "Inne";
@@ -205,24 +521,15 @@ function selectProportionalQuestions(pool, maxPerCategory = 12) {
         categories[cat].push(q);
     });
 
-    console.log("📊 Kategorie:", Object.keys(categories));
-    console.log("📊 Liczba pytań w kategoriach:", Object.fromEntries(
-        Object.entries(categories).map(([k, v]) => [k, v.length])
-    ));
-
-    // Losuj pytania z każdej kategorii (max 12)
     let selectedQuestions = [];
     Object.keys(categories).forEach(cat => {
         const catQuestions = categories[cat];
-        // Losuj maksymalnie 12 pytań z danej kategorii
         const shuffled = catQuestions.sort(() => Math.random() - 0.5);
         const take = Math.min(maxPerCategory, shuffled.length);
         const picked = shuffled.slice(0, take);
         selectedQuestions = selectedQuestions.concat(picked);
-        console.log(`📌 ${cat}: wylosowano ${take} z ${shuffled.length} pytań`);
     });
 
-    // Mieszamy wszystkie pytania
     return selectedQuestions.sort(() => Math.random() - 0.5);
 }
 
@@ -233,12 +540,37 @@ function start() {
         return;
     }
 
+    // Odtwórz muzykę do testu
+    if (!examMusicStarted) {
+        examMusicStarted = true;
+        const modal = document.createElement('div');
+        modal.id = 'examMusicModal';
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2 style="margin-bottom:15px;">🎵 Muzyka do testu</h2>
+                <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
+                    <iframe 
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;"
+                        src="https://www.youtube.com/embed/T1G4wNahcFA" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <br>
+                <button class="close-btn" onclick="closeExamMusic()">Zamknij i rozpocznij test</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        return;
+    }
+
     document.getElementById("result").innerHTML = "";
 
     const selectedOption = document.getElementById("categorySelect").value;
     let pool = questions;
 
-    // Jeśli wybrano konkretną kategorię (nie "all" i nie "exam")
     if (selectedOption !== "all" && selectedOption !== "exam") {
         pool = questions.filter(q => q.kategoria === selectedOption);
     }
@@ -248,11 +580,9 @@ function start() {
         return;
     }
 
-    // 🎯 WERSJA EGZAMINOWA - proporcjonalne losowanie
     if (selectedOption === "exam") {
         selected = selectProportionalQuestions(pool, 12);
     } else {
-        // Normalne losowanie (wszystkie kategorie lub wybrana)
         selected = pool
             .map(q => ({ q, r: Math.random() }))
             .sort((a, b) => a.r - b.r)
@@ -261,13 +591,12 @@ function start() {
             .sort(() => Math.random() - 0.5);
     }
 
-    // Jeśli wersja egzaminowa i brak pytań
     if (selected.length === 0) {
         alert("Brak pytań do wyświetlenia!");
         return;
     }
 
-    let html = `<div style="margin-bottom: 15px; padding: 10px; background: #e8f4fd; border-radius: 8px;">
+    let html = `<div style="background:white;padding:15px 20px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;">
         📊 Liczba pytań: <b>${selected.length}</b>
     </div>`;
 
@@ -293,12 +622,19 @@ function start() {
         html += `</div>`;
     });
 
-    html += `<button onclick="check()">✅ Sprawdź wynik</button>`;
+    html += `<button class="btn-check" onclick="check()">✅ Sprawdź wynik</button>`;
 
     document.getElementById("quiz").innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* 🧮 SPRAWDZANIE + POPRAWNE ODPOWIEDZI */
+function closeExamMusic() {
+    const modal = document.getElementById('examMusicModal');
+    if (modal) modal.remove();
+    start();
+}
+
+/* 🧮 SPRAWDZANIE */
 function check() {
     let score = 0;
     let resultHTML = "";
@@ -315,21 +651,29 @@ function check() {
         const isCorrect = userKey === correctKey;
         if (isCorrect) score++;
 
+        const statusClass = isCorrect ? 'correct' : 'incorrect';
+        const statusText = isCorrect ? '✅ Poprawnie' : '❌ Źle';
+
         resultHTML += `
-        <div class="question" style="border-left: 5px solid ${isCorrect ? 'green' : 'red'};">
+        <div class="question ${statusClass}">
             <b>${i + 1}. ${q.pytanie}</b>
             <span class="category-badge">${q.kategoria || "Inne"}</span>
             <br><br>
 
-            Twoja odpowiedź:<br>
-            <span style="color:${isCorrect ? 'green' : 'red'}; font-weight:bold;">
-                ${userText}
-            </span><br><br>
+            <div style="margin: 8px 0;">
+                <span style="font-weight:600;">Twój wybór:</span>
+                <span style="color:${isCorrect ? '#2ec4b6' : '#e94560'}; font-weight:bold;">
+                    ${userText}
+                </span>
+                <span style="margin-left:10px;font-weight:600;">${statusText}</span>
+            </div>
 
-            Poprawna odpowiedź:<br>
-            <span style="color:green; font-weight:bold;">
-                ${correctText}
-            </span>
+            <div style="margin: 8px 0;">
+                <span style="font-weight:600;">Poprawna odpowiedź:</span>
+                <span style="color:#2ec4b6; font-weight:bold;">
+                    ${correctText}
+                </span>
+            </div>
         </div>
         `;
     });
@@ -337,44 +681,67 @@ function check() {
     const percentage = Math.round((score / selected.length) * 100);
 
     document.getElementById("result").innerHTML = `
-        <hr>
-        🏁 Wynik: <b>${score} / ${selected.length}</b> (${percentage}%)<br><br>
-        <h2>📊 Analiza:</h2>
+        <div class="result-score">
+            <div style="font-size:18px;color:#1a1a2e;">🏁 Twój wynik</div>
+            <div class="score-number">${score} / ${selected.length}</div>
+            <div style="font-size:24px;font-weight:700;color:${percentage >= 75 ? '#2ec4b6' : '#e94560'};">
+                ${percentage}%
+            </div>
+        </div>
+        <h2 style="margin:25px 0 15px 0;color:#1a1a2e;">📊 Analiza odpowiedzi:</h2>
         ${resultHTML}
     `;
 
+    // Modal z wynikiem
     const modal = document.getElementById("resultModal");
     const modalTitle = document.getElementById("modalTitle");
     const modalScore = document.getElementById("modalScore");
     const modalGif = document.getElementById("modalGif");
 
-    modalScore.textContent = `Twój wynik to: ${percentage}% (${score}/${selected.length})`;
+    modalScore.textContent = `${score}/${selected.length} (${percentage}%)`;
 
     if (percentage >= 75) {
-        modalTitle.innerHTML = "🎉 ZDAŁEŚ!";
-        modalTitle.style.color = "green";
-        modalGif.src = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2Q3ejJ3eGZwbzNnemZ2cGZpYTVoaGM0cTY1MWhsYzBsNnJhd2s1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/M0C1x0a4yP2uI/giphy.gif";
+        modalTitle.textContent = "🎉 ZDAŁEŚ!";
+        modalTitle.className = "modal-title pass";
+        modalGif.src = "https://media.tenor.com/b1ORh.gif";
     } else {
-        modalTitle.innerHTML = "⚠️ Masz problem...";
-        modalTitle.style.color = "red";
-        modalGif.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDNmcWVha3JzeG5mYTBkYWFrOXFpb2MxNmgwenlhdGNicWo4cHVueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/D12CsrRNv7gL6/giphy.gif";
+        modalTitle.textContent = "⚠️ Masz problem...";
+        modalTitle.className = "modal-title fail";
+        modalGif.src = "https://media.tenor.com/b1ORh.gif";
     }
 
     modal.style.display = "flex";
-    
     document.getElementById("result").scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ❌ ZAMYKANIE OKNA */
+/* ❌ ZAMYKANIE MODALI */
 function closeModal() {
     document.getElementById("resultModal").style.display = "none";
 }
 
+function openMotivation() {
+    document.getElementById("motivationModal").style.display = "flex";
+}
+
+function closeMotivation() {
+    document.getElementById("motivationModal").style.display = "none";
+}
+
+function openMusic() {
+    document.getElementById("musicModal").style.display = "flex";
+}
+
+function closeMusic() {
+    document.getElementById("musicModal").style.display = "none";
+}
+
 window.onclick = function(event) {
-    const modal = document.getElementById("resultModal");
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
 }
 
 </script>
