@@ -273,14 +273,41 @@ function buildCategories() {
     });
 }
 
-/* 🔀 odpowiedzi */
+/* 🔀 odpowiedzi i ignorowanie "-" */
 function shuffleAnswers(q) {
-    return [
-        { key: "A", text: q.A || q.a || "" },
-        { key: "B", text: q.B || q.b || "" },
-        { key: "C", text: q.C || q.c || "" },
-        { key: "D", text: q.D || q.d || "" }
-    ].sort(() => Math.random() - 0.5);
+    const rawAnswers = [
+        { key: "A", text: q.A || q.a },
+        { key: "B", text: q.B || q.b },
+        { key: "C", text: q.C || q.c },
+        { key: "D", text: q.D || q.d }
+    ];
+
+    // 🔥 Pancerne filtrowanie odpowiedzi
+    const validAnswers = rawAnswers.filter(a => {
+        // 1. Jeśli pole jest puste, niezdefiniowane lub nie jest tekstem/liczbą -> odrzuć
+        if (a.text === undefined || a.text === null) return false;
+        
+        // 2. Zamień na tekst i wyczyść skrajne spacje
+        let cleanedText = a.text.toString().trim();
+        
+        // 3. Jeśli po czyszczeniu jest puste -> odrzuć
+        if (cleanedText === "") return false;
+        
+        // 4. Sprawdź czy tekst to jakikolwiek typ myślnika (zwykły -, półpauza –, pauza —)
+        if (cleanedText === "-" || cleanedText === "–" || cleanedText === "—") return false;
+        
+        // Jeśli przeszło wszystkie testy, opcja jest prawidłowa
+        return true;
+    });
+
+    // Mapujemy tekst ponownie, żeby upewnić się, że przesyłamy czysty string
+    const finalAnswers = validAnswers.map(a => ({
+        key: a.key,
+        text: a.text.toString().trim()
+    }));
+
+    // Losowe mieszanie tylko prawidłowych odpowiedzi
+    return finalAnswers.sort(() => Math.random() - 0.5);
 }
 
 /* 🚀 START TESTU */
