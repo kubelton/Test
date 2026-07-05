@@ -158,35 +158,36 @@ function shuffleAnswers(q) {
         { key: "D", text: q.D || q.d }
     ];
 
-    // 🔥 Filtrowanie - pomijamy wszystkie warianty "puste" (niezależnie od wielkości liter)
+    // 🔥 Filtrowanie - pomijamy wszystko co zawiera słowo "puste" (niezależnie od wielkości liter)
     const validAnswers = rawAnswers.filter(a => {
-        if (a.text === undefined || a.text === null) return false;
+        // Sprawdź czy odpowiedź istnieje
+        if (!a.text) return false;
         
-        let cleanedText = a.text.toString().trim();
+        // Zamień na tekst i usuń spacje
+        let text = a.text.toString().trim();
+        let lowerText = text.toLowerCase();
         
-        // Sprawdzamy czy tekst to "puste" (różne warianty wielkości liter)
-        const lowerText = cleanedText.toLowerCase();
+        // Jeśli tekst jest pusty lub to myślnik -> pomiń
+        if (text === "" || text === "-" || text === "–" || text === "—") return false;
         
-        // Lista wariantów do pominięcia
-        const emptyVariants = ["", "-", "puste", "(puste)", "[puste]", "pusty", "null", "undefined", "brak", "brak odpowiedzi"];
+        // ✅ KLUCZOWA LINIJKA: Jeśli tekst zawiera słowo "puste" -> pomiń
+        if (lowerText.includes("puste")) return false;
         
-        // Sprawdzamy czy tekst znajduje się na liście (niezależnie od wielkości liter)
-        if (emptyVariants.some(variant => lowerText === variant)) return false;
-        
-        // Dodatkowo: jeśli tekst zawiera słowo "puste" jako część większego tekstu (np. "Puste" z dużej litery)
-        if (lowerText.includes("puste") && cleanedText.length < 20) return false;
+        // Pomijamy też inne warianty
+        if (lowerText === "brak" || lowerText === "brak odpowiedzi") return false;
         
         return true;
     });
 
+    // Mapujemy do finalnej tablicy
     const finalAnswers = validAnswers.map(a => ({
         key: a.key,
         text: a.text.toString().trim()
     }));
 
+    // Losujemy kolejność
     return finalAnswers.sort(() => Math.random() - 0.5);
 }
-
 .modal-content {
     background-color: #fff;
     padding: 25px;
