@@ -82,11 +82,88 @@ body {
     background: #d63851;
 }
 
-/* Sekcja główna */
+/* Sekcja główna - układ 2 kolumny */
 .main-content {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 40px auto;
     padding: 0 20px;
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Lewa kolumna - główna zawartość */
+.left-column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Prawa kolumna - statystyki */
+.right-column {
+    width: 280px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+}
+
+.stats-box {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.stats-box h3 {
+    color: #1a1a2e;
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.stats-box .stats-total {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stats-box .stats-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: background 0.2s;
+}
+
+.stats-box .stats-item:hover {
+    background: #e8edf9;
+}
+
+.stats-box .stats-item .category-name {
+    font-size: 14px;
+    color: #1a1a2e;
+}
+
+.stats-box .stats-item .category-count {
+    background: #4361ee;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stats-box .stats-empty {
+    text-align: center;
+    color: #999;
+    padding: 20px 0;
+    font-size: 14px;
 }
 
 /* Kontrolki */
@@ -379,6 +456,18 @@ body {
 }
 
 /* Responsywność */
+@media (max-width: 992px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .right-column {
+        width: 100%;
+        position: static;
+        order: -1;
+    }
+}
+
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
@@ -426,19 +515,32 @@ body {
 
 <!-- MAIN CONTENT -->
 <div class="main-content">
-    <div class="controls">
-        <select id="categorySelect">
-            <option value="all">📚 Wszystkie kategorie</option>
-            <option value="exam">🎯 Wersja egzaminowa</option>
-        </select>
-        <div class="button-group">
-            <button class="btn-load" onclick="loadFromGit()">📥 Załaduj pytania</button>
-            <button class="btn-start" onclick="start()">🚀 Start testu</button>
+    <!-- Lewa kolumna -->
+    <div class="left-column">
+        <div class="controls">
+            <select id="categorySelect">
+                <option value="all">📚 Wszystkie kategorie</option>
+                <option value="exam">🎯 Wersja egzaminowa</option>
+            </select>
+            <div class="button-group">
+                <button class="btn-load" onclick="loadFromGit()">📥 Załaduj pytania</button>
+                <button class="btn-start" onclick="start()">🚀 Start testu</button>
+            </div>
         </div>
+
+        <div id="quiz"></div>
+        <div id="result"></div>
     </div>
 
-    <div id="quiz"></div>
-    <div id="result"></div>
+    <!-- Prawa kolumna - statystyki -->
+    <div class="right-column">
+        <div class="stats-box" id="statsBox">
+            <h3>📊 Statystyki kategorii</h3>
+            <div id="statsContent">
+                <div class="stats-empty">Załaduj pytania aby zobaczyć statystyki</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL WYNIKU -->
@@ -510,6 +612,7 @@ async function loadFromGit() {
         questions = XLSX.utils.sheet_to_json(sheet);
 
         buildCategories();
+        updateStats();
 
         alert("Załadowano pytań: " + questions.length);
 
@@ -517,6 +620,40 @@ async function loadFromGit() {
         alert("Błąd ładowania pliku! Sprawdź konsolę.");
         console.error(err);
     }
+}
+
+/* 📊 Aktualizacja statystyk kategorii */
+function updateStats() {
+    const statsContent = document.getElementById('statsContent');
+    
+    if (questions.length === 0) {
+        statsContent.innerHTML = '<div class="stats-empty">Załaduj pytania aby zobaczyć statystyki</div>';
+        return;
+    }
+
+    // Policz pytania w kategoriach
+    const categoryCount = {};
+    questions.forEach(q => {
+        const cat = q.kategoria || "Inne";
+        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+    });
+
+    // Posortuj kategorie alfabetycznie
+    const sortedCategories = Object.keys(categoryCount).sort();
+
+    let html = `<div class="stats-total">📚 Łącznie: <b>${questions.length}</b> pytań</div>`;
+
+    sortedCategories.forEach(cat => {
+        const count = categoryCount[cat];
+        html += `
+            <div class="stats-item">
+                <span class="category-name">${cat}</span>
+                <span class="category-count">${count}</span>
+            </div>
+        `;
+    });
+
+    statsContent.innerHTML = html;
 }
 
 /* 📂 kategorie */
