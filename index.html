@@ -706,7 +706,7 @@ function shuffleAnswers(q) {
 }
 
 /* 🎯 Funkcja do losowania proporcjonalnego pytań z kategorii */
-function selectProportionalQuestions(pool, maxPerCategory = 12) {
+function selectProportionalQuestions(pool, maxPerCategory = 12, maxTotal = 60) {
     const categories = {};
     pool.forEach(q => {
         const cat = q.kategoria || "Inne";
@@ -714,14 +714,39 @@ function selectProportionalQuestions(pool, maxPerCategory = 12) {
         categories[cat].push(q);
     });
 
+    const categoryNames = Object.keys(categories);
+    const totalCategories = categoryNames.length;
+    
+    // Oblicz ile pytań powinno być z każdej kategorii (równomiernie)
+    const questionsPerCategory = Math.floor(maxTotal / totalCategories);
+    const remainder = maxTotal % totalCategories;
+    
     let selectedQuestions = [];
-    Object.keys(categories).forEach(cat => {
+    
+    categoryNames.forEach((cat, index) => {
         const catQuestions = categories[cat];
         const shuffled = catQuestions.sort(() => Math.random() - 0.5);
-        const take = Math.min(maxPerCategory, shuffled.length);
+        
+        // Ile pytań wziąć z tej kategorii
+        let take = Math.min(questionsPerCategory, shuffled.length);
+        
+        // Jeśli są reszty, dajemy po 1 dodatkowemu pytaniu pierwszym kategoriom
+        if (index < remainder && shuffled.length > take) {
+            take = Math.min(take + 1, shuffled.length);
+        }
+        
+        // Ograniczenie do maxPerCategory
+        take = Math.min(take, maxPerCategory);
+        
         const picked = shuffled.slice(0, take);
         selectedQuestions = selectedQuestions.concat(picked);
     });
+
+    // Jeśli nadal jest więcej niż maxTotal (np. kategorie mają mało pytań)
+    if (selectedQuestions.length > maxTotal) {
+        const shuffled = selectedQuestions.sort(() => Math.random() - 0.5);
+        selectedQuestions = shuffled.slice(0, maxTotal);
+    }
 
     return selectedQuestions.sort(() => Math.random() - 0.5);
 }
