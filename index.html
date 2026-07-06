@@ -73,15 +73,6 @@ body {
     background: #3651d4;
 }
 
-.header-right .btn-music {
-    background: #e94560;
-    color: white;
-}
-
-.header-right .btn-music:hover {
-    background: #d63851;
-}
-
 /* Sekcja główna - układ 2 kolumny */
 .main-content {
     max-width: 1200px;
@@ -406,7 +397,7 @@ body {
     padding: 30px;
     border-radius: 16px;
     text-align: center;
-    max-width: 500px;
+    max-width: 600px;
     width: 90%;
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     position: relative;
@@ -509,7 +500,6 @@ body {
     </div>
     <div class="header-right">
         <button class="btn-motivation" onclick="openMotivation()">💪 Motywacja</button>
-        <button class="btn-music" onclick="openMusic()">🎵 Dobra muzyka</button>
     </div>
 </div>
 
@@ -563,28 +553,12 @@ body {
                 style="position:absolute;top:0;left:0;width:100%;height:100%;"
                 src="https://www.youtube.com/embed/xR-E2pwgFJo" 
                 frameborder="0" 
+                allow="autoplay; encrypted-media" 
                 allowfullscreen>
             </iframe>
         </div>
         <br>
         <button class="close-btn" onclick="closeMotivation()">Zamknij</button>
-    </div>
-</div>
-
-<!-- MODAL MUZYKI -->
-<div id="musicModal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-bottom: 15px;">🎵 Dobra muzyka do testu</h2>
-        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
-            <iframe 
-                style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                src="https://www.youtube.com/embed/8aZoEaCtFfU" 
-                frameborder="0" 
-                allowfullscreen>
-            </iframe>
-        </div>
-        <br>
-        <button class="close-btn" onclick="closeMusic()">Zamknij</button>
     </div>
 </div>
 
@@ -631,14 +605,12 @@ function updateStats() {
         return;
     }
 
-    // Policz pytania w kategoriach
     const categoryCount = {};
     questions.forEach(q => {
         const cat = q.kategoria || "Inne";
         categoryCount[cat] = (categoryCount[cat] || 0) + 1;
     });
 
-    // Posortuj kategorie alfabetycznie
     const sortedCategories = Object.keys(categoryCount).sort();
 
     let html = `<div class="stats-total">📚 Łącznie: <b>${questions.length}</b> pytań</div>`;
@@ -717,7 +689,6 @@ function selectProportionalQuestions(pool, maxPerCategory = 12, maxTotal = 60) {
     const categoryNames = Object.keys(categories);
     const totalCategories = categoryNames.length;
     
-    // Oblicz ile pytań powinno być z każdej kategorii (równomiernie)
     const questionsPerCategory = Math.floor(maxTotal / totalCategories);
     const remainder = maxTotal % totalCategories;
     
@@ -727,22 +698,18 @@ function selectProportionalQuestions(pool, maxPerCategory = 12, maxTotal = 60) {
         const catQuestions = categories[cat];
         const shuffled = catQuestions.sort(() => Math.random() - 0.5);
         
-        // Ile pytań wziąć z tej kategorii
         let take = Math.min(questionsPerCategory, shuffled.length);
         
-        // Jeśli są reszty, dajemy po 1 dodatkowemu pytaniu pierwszym kategoriom
         if (index < remainder && shuffled.length > take) {
             take = Math.min(take + 1, shuffled.length);
         }
         
-        // Ograniczenie do maxPerCategory
         take = Math.min(take, maxPerCategory);
         
         const picked = shuffled.slice(0, take);
         selectedQuestions = selectedQuestions.concat(picked);
     });
 
-    // Jeśli nadal jest więcej niż maxTotal (np. kategorie mają mało pytań)
     if (selectedQuestions.length > maxTotal) {
         const shuffled = selectedQuestions.sort(() => Math.random() - 0.5);
         selectedQuestions = shuffled.slice(0, maxTotal);
@@ -773,7 +740,7 @@ function start() {
     }
 
     if (selectedOption === "exam") {
-        selected = selectProportionalQuestions(pool, 12);
+        selected = selectProportionalQuestions(pool, 12, 60);
     } else {
         selected = pool
             .map(q => ({ q, r: Math.random() }))
@@ -840,7 +807,6 @@ function check() {
         const statusClass = isCorrect ? 'correct' : 'incorrect';
         const statusText = isCorrect ? '✅ Poprawnie' : '❌ Źle';
 
-        // Pobierz wszystkie odpowiedzi dla tego pytania (bez mieszania)
         const allRawAnswers = [
             { key: "A", text: q.A || q.a },
             { key: "B", text: q.B || q.b },
@@ -858,7 +824,6 @@ function check() {
             return true;
         });
 
-        // Generuj listę wszystkich odpowiedzi
         let allAnswersHTML = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;">';
         allAnswersHTML += '<div style="font-size:14px;font-weight:600;color:#666;margin-bottom:6px;">📋 Wszystkie dostępne odpowiedzi:</div>';
 
@@ -934,7 +899,6 @@ function check() {
         ${resultHTML}
     `;
 
-    // Modal z wynikiem
     const modal = document.getElementById("resultModal");
     const modalTitle = document.getElementById("modalTitle");
     const modalScore = document.getElementById("modalScore");
@@ -967,14 +931,6 @@ function openMotivation() {
 
 function closeMotivation() {
     document.getElementById("motivationModal").style.display = "none";
-}
-
-function openMusic() {
-    document.getElementById("musicModal").style.display = "flex";
-}
-
-function closeMusic() {
-    document.getElementById("musicModal").style.display = "none";
 }
 
 window.onclick = function(event) {
