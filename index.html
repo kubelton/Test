@@ -174,7 +174,7 @@ body {
     border-radius: 8px;
     background: white;
     cursor: pointer;
-    min-width: 250px;
+    min-width: 280px;
     transition: border-color 0.3s;
     margin-bottom: 15px;
 }
@@ -510,7 +510,8 @@ body {
         <div class="controls">
             <select id="categorySelect">
                 <option value="all">📚 Wszystkie kategorie</option>
-                <option value="exam">🎯 Wersja egzaminowa</option>
+                <option value="exam">🎯 Wersja egzaminowa (max 12 z każdej)</option>
+                <option value="oneper">🎯 Po 1 pytaniu z każdej kategorii</option>
             </select>
             <div class="button-group">
                 <button class="btn-load" onclick="loadFromGit()">📥 Załaduj pytania</button>
@@ -634,7 +635,8 @@ function buildCategories() {
     
     select.innerHTML = `
         <option value="all">📚 Wszystkie kategorie</option>
-        <option value="exam">🎯 Wersja egzaminowa</option>
+        <option value="exam">🎯 Wersja egzaminowa (max 12 z każdej)</option>
+        <option value="oneper">🎯 Po 1 pytaniu z każdej kategorii</option>
     `;
 
     const categories = [...new Set(questions.map(q => q.kategoria).filter(Boolean))];
@@ -675,6 +677,28 @@ function shuffleAnswers(q) {
     }));
 
     return finalAnswers.sort(() => Math.random() - 0.5);
+}
+
+/* 🎯 Funkcja do losowania 1 pytania z każdej kategorii */
+function selectOnePerCategory(pool) {
+    const categories = {};
+    pool.forEach(q => {
+        const cat = q.kategoria || "Inne";
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(q);
+    });
+
+    let selectedQuestions = [];
+    
+    Object.keys(categories).forEach(cat => {
+        const catQuestions = categories[cat];
+        const shuffled = catQuestions.sort(() => Math.random() - 0.5);
+        // Bierzemy tylko 1 pytanie z każdej kategorii
+        const picked = shuffled.slice(0, 1);
+        selectedQuestions = selectedQuestions.concat(picked);
+    });
+
+    return selectedQuestions.sort(() => Math.random() - 0.5);
 }
 
 /* 🎯 Funkcja do losowania proporcjonalnego pytań z kategorii */
@@ -730,7 +754,7 @@ function start() {
     const selectedOption = document.getElementById("categorySelect").value;
     let pool = questions;
 
-    if (selectedOption !== "all" && selectedOption !== "exam") {
+    if (selectedOption !== "all" && selectedOption !== "exam" && selectedOption !== "oneper") {
         pool = questions.filter(q => q.kategoria === selectedOption);
     }
 
@@ -739,9 +763,13 @@ function start() {
         return;
     }
 
+    // Wybór trybu
     if (selectedOption === "exam") {
         selected = selectProportionalQuestions(pool, 12, 60);
+    } else if (selectedOption === "oneper") {
+        selected = selectOnePerCategory(pool);
     } else {
+        // Wszystkie kategorie lub konkretna kategoria
         selected = pool
             .map(q => ({ q, r: Math.random() }))
             .sort((a, b) => a.r - b.r)
