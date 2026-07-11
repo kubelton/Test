@@ -171,12 +171,6 @@ body {
     font-weight: 600;
 }
 
-.stats-box .stats-item .click-hint {
-    font-size: 11px;
-    color: #999;
-    margin-left: 8px;
-}
-
 .stats-box .stats-empty {
     text-align: center;
     color: #999;
@@ -793,7 +787,7 @@ function loadSingleQuestion(categoryName) {
     });
 
     html += `
-        <button class="btn-check" style="margin:15px auto 5px auto;padding:10px 30px;font-size:16px;" onclick="checkSingleQuestion('${categoryName}')">
+        <button class="btn-check" style="margin:15px auto 5px auto;padding:10px 30px;font-size:16px;" onclick="checkSingleQuestion()">
             ✅ Sprawdź odpowiedź
         </button>
         <div id="singleResult"></div>
@@ -805,7 +799,7 @@ function loadSingleQuestion(categoryName) {
 }
 
 /* 🧮 Sprawdzanie pojedynczego pytania */
-function checkSingleQuestion(categoryName) {
+function checkSingleQuestion() {
     const ans = document.querySelector(`input[name="singleQ"]:checked`);
     
     if (!ans) {
@@ -853,7 +847,6 @@ function checkSingleQuestion(categoryName) {
 /* ❌ Zamknięcie pojedynczego pytania */
 function closeSingleQuestion() {
     document.getElementById('singleQuestion').innerHTML = '';
-    document.getElementById('singleResult').innerHTML = '';
 }
 
 /* 🎯 Funkcja do losowania 1 pytania z każdej kategorii */
@@ -925,7 +918,7 @@ function start() {
         return;
     }
 
-    // Zamknij pojedyncze pytanie jeśli jest otwarte
+    // Usuń pojedyncze pytanie jeśli jest otwarte
     closeSingleQuestion();
 
     document.getElementById("result").innerHTML = "";
